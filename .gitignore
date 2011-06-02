@@ -1,3 +1,4 @@
 .rake_test_cache
-.chef
+.chef/*.pem
+.chef/knife.rb
 .vagrant
