@@ -35,6 +35,12 @@ chef_node_name = Chef::Config[:node_name] == node["fqdn"] ? false : Chef::Config
   end
 end
 
+directory "/etc/chef" do
+  owner "root"
+  group root_group
+  mode 0755
+end
+  
 template "/etc/chef/client.rb" do
   source "client.rb.erb"
   owner "root"
