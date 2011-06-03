@@ -6,3 +6,9 @@ run_list(
     "recipe[chef-server::rubygems-install]",
     "recipe[chef-server]"
 )
+
+default_attributes({
+  :chef_server => {
+    :webui_enabled => true
+  }
+})
