@@ -19,4 +19,16 @@ Vagrant::Config.run do |config|
       })
     end
   end
+  
+  # Configure a demo server
+  config.vm.define :demo do |vm_config|
+    vm_config.vm.host_name = "demo.local"
+    vm_config.vm.network("192.168.10.11")
+    vm_config.vm.box = "lucid64-chef-0.10.0"
+    vm_config.vm.box_url = "http://dev.cjadvertising.com/lucid64-chef-0.10.0.box"
+    vm_config.vm.provision :chef_server do |chef|
+      chef.chef_server_url = "http://192.168.10.10:4000"
+      chef.validation_key_path = "validation.pem"
+    end
+  end
 end
