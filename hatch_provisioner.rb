@@ -6,13 +6,11 @@ class HatchProvisioner < Vagrant::Provisioners::ChefSolo
   
   def provision!
     super
-    download!('/etc/chef/validation.pem', './validation.pem')
-  end
-  
-  def download!(from, to)
     vm.ssh.execute do |ssh|
+      ssh.exec!('sudo cp /etc/chef/validation.pem /tmp/validation.pem && sudo chmod 666 /tmp/validation.pem')
       scp = Net::SCP.new(ssh.session)
-      scp.download!(from, to)
+      scp.download!('/tmp/validation.pem', './validation.pem')
+      ssh.exec!('sudo rm /tmp/validation.pem')
     end
   end
 end
