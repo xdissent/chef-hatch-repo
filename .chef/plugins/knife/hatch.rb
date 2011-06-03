@@ -1,5 +1,4 @@
 gem 'chef', '=0.10.0'
-require 'chef/knife/ec2_server_create'
 
 module CjKnifePlugins
 
