@@ -63,3 +63,21 @@ task :bundle_cookbook, :cookbook do |t, args|
 
   FileUtils.rm_rf temp_dir
 end
+
+namespace :hatch do
+  task :init, :client_name do |t, args|
+    puts "Registering #{args.client_name}"
+    Chef::Config.from_file("/etc/chef/client.rb")
+    r = Chef::REST.new(Chef::Config[:registration_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key])
+    r.register(args.client_name, "/tmp/#{args.client_name}.pem")
+    c = Chef::ApiClient.cdb_load(args.client_name)
+    c.admin(true)
+    c.cdb_save
+    puts "Created #{args.client_name} admin client."
+  end
+  task :finish, :run_list do |t, args|
+    n = Chef::Node.cdb_load("chef.local")
+    n.run_list.reset!(["role[chef_server]"])
+    n.cdb_save
+  end
+end
