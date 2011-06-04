@@ -12,7 +12,6 @@ Vagrant::Config.run do |config|
     vm_config.vm.provision HatchProvisioner do |chef|
       chef.node_name = "chef.local"
       chef.add_role("chef_server")
-      chef.log_level = "debug"
     end
   end
   
