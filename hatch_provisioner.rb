@@ -56,8 +56,10 @@ class HatchProvisioner < Vagrant::Provisioners::ChefSolo
     `knife cookbook upload --all`
     `for role in roles/*.rb ; do knife role from file $role ; done`
     
+    n = config.node_name || env.config.vm.host_name
+    
     vm.ssh.execute do |ssh|
-      ssh.exec!("cd /vagrant && sudo rake hatch:finish['#{config.client_name}','#{config.run_list.join(' ')}']")
+      ssh.exec!("cd /vagrant && sudo rake hatch:finish['#{n}','#{config.run_list.join(' ')}']")
       ssh.exec!("sudo /etc/init.d/chef-client restart")
     end
 
