@@ -15,6 +15,7 @@ module CjKnifePlugins
       require 'net/scp'
       require 'readline'
       require 'chef/json_compat'
+      require 'tempfile'
     end
     
     attr_accessor :initial_sleep_delay
@@ -126,7 +127,7 @@ module CjKnifePlugins
       :long => "--run-list RUN_LIST",
       :description => "Comma separated list of roles/recipes to apply",
       :proc => lambda { |o| o.split(/[\s,]+/) },
-      :default => []
+      :default => ["role[chef_server]"]
    
     option :subnet_id,
       :short => "-s SUBNET-ID",
@@ -192,31 +193,31 @@ module CjKnifePlugins
       }
       server_def[:subnet_id] = config[:subnet_id] if config[:subnet_id]
    
-    if ami.root_device_type == "ebs"
-      ami_map = ami.block_device_mapping.first
-      ebs_size = begin
-                   if config[:ebs_size]
-                     Integer(config[:ebs_size]).to_s
-                   else
-                     ami_map["volumeSize"].to_s
+      if ami.root_device_type == "ebs"
+        ami_map = ami.block_device_mapping.first
+        ebs_size = begin
+                     if config[:ebs_size]
+                       Integer(config[:ebs_size]).to_s
+                     else
+                       ami_map["volumeSize"].to_s
+                     end
+                   rescue ArgumentError
+                     puts "--ebs-size must be an integer"
+                     msg opt_parser
+                     exit 1
                    end
-                 rescue ArgumentError
-                   puts "--ebs-size must be an integer"
-                   msg opt_parser
-                   exit 1
-                 end
-      delete_term = if config[:ebs_no_delete_on_term]
-                      "false"
-                    else
-                      ami_map["deleteOnTermination"]
-                    end
-      server_def[:block_device_mapping] =
-        [{
-           'DeviceName' => ami_map["deviceName"],
-           'Ebs.VolumeSize' => ebs_size,
-           'Ebs.DeleteOnTermination' => delete_term
-         }]
-    end
+        delete_term = if config[:ebs_no_delete_on_term]
+                        "false"
+                      else
+                        ami_map["deleteOnTermination"]
+                      end
+        server_def[:block_device_mapping] =
+          [{
+             'DeviceName' => ami_map["deviceName"],
+             'Ebs.VolumeSize' => ebs_size,
+             'Ebs.DeleteOnTermination' => delete_term
+           }]
+      end
       server = connection.servers.create(server_def)
    
       puts "#{ui.color("Instance ID", :cyan)}: #{server.id}"
@@ -309,27 +310,74 @@ module CjKnifePlugins
       # Always use hatch distro
       bootstrap.config[:distro] = 'ubuntu10.04-gems-hatch'
       
-      Net::SSH.start(server.public_ip_address, config[:ssh_user], :keys => [config[:identity_file]]) do |ssh|
-        ssh.exec! "mkdir -p /tmp/chef-hatch"
+      # Package files to send
+      puts "#{ui.color("Creating temporary directory", :cyan)}"
+      temp_base = Dir.tmpdir
+      temp_dir = File.join(temp_base, "chef-hatch")
+      FileUtils.mkdir(temp_dir)
+      
+      puts "#{ui.color("Creating solo config", :cyan)}"
+      solo_config = <<-END_CONFIG
+        node_name "#{bootstrap.config[:chef_node_name]}"
+        file_cache_path "/tmp/chef-hatch/cache"
+        cookbook_path ["/tmp/chef-hatch/cookbooks"]
+        role_path "/tmp/chef-hatch/roles"
+        log_level :info
+        data_bag_path ["/tmp/chef-hatch/data_bags"]
+      END_CONFIG
+      config_file = File.new("#{temp_dir}/solo.rb", "w")
+      config_file.write(solo_config)
+      config_file.close
+      
+      puts "#{ui.color("Copying files to temporary directory", :cyan)}"
+      files = ["cookbooks", "roles", "data_bags", "environments", "Rakefile", "config"]
+      files.each do |f|
+        FileUtils.cp_r("./#{f}", "#{temp_dir}/#{f}") if File.exists?(f)
       end
+
+      puts "#{ui.color("Creating chef-hatch tarball", :cyan)}"
+      tar_file = "chef-hatch.tgz"
+      tar_file_path = File.join(temp_base, tar_file)
+      system("tar", "-C", temp_base, "-cvzf", tar_file_path, "chef-hatch")
     
-      # SCP roles && cookbooks folders
       Net::SCP.start(server.public_ip_address, config[:ssh_user], :keys => [config[:identity_file]]) do |scp|
-        puts "#{ui.color("Copying cookbooks", :cyan)}"
-        scp.upload!('./cookbooks', '/tmp/chef-hatch/cookbooks', :recursive => true)
-        scp.upload!('./site-cookbooks', '/tmp/chef-hatch/site-cookbooks', :recursive => true)
-        
-        puts "#{ui.color("Copying roles", :cyan)}"
-        scp.upload!('./roles', '/tmp/chef-hatch/roles', :recursive => true)
-        
-        puts "#{ui.color("Copying databags", :cyan)}"
-        scp.upload!('./data_bags', '/tmp/chef-hatch/data_bags', :recursive => true)
-        
-        puts "#{ui.color("Copying environments", :cyan)}"
-        scp.upload!('./environments', '/tmp/chef-hatch/environments', :recursive => true)
+        puts "#{ui.color("Copying chef-hatch tarball", :cyan)}"
+        scp.upload!(tar_file_path, "/tmp/#{tar_file}")
       end
       
       bootstrap
+      
+      Net::SSH.start(server.public_ip_address, config[:ssh_user], :keys => [config[:identity_file]]) do |ssh|
+        ssh.exec! "cd /tmp/chef-hatch && sudo rake hatch:init['hatch']"
+        ssh.exec! "sudo chmod 666 /tmp/hatch.pem"
+        ssh.exec! "sudo cp /etc/chef/validation.pem /tmp/chef-hatch/validation.pem"
+        ssh.exec! "sudo chmod 666 /tmp/chef-hatch/validation.pem"
+      end
+      
+      Net::SCP.start(server.public_ip_address, config[:ssh_user], :keys => [config[:identity_file]]) do |scp|
+        scp.download!('/tmp/chef-hatch/validation.pem', './.chef/validation.pem')
+        scp.download!('/tmp/hatch.pem', './.chef/hatch.pem')
+      end
+      
+      # Create knife.rb
+      puts "#{ui.color("Creating knife.rb", :cyan)}"
+      setup_knife_config(server)
+      
+      puts "#{ui.color("Uploading all cookbooks", :cyan)}"
+      `knife cookbook upload --all`
+      
+      puts "#{ui.color("Uploading all roles", :cyan)}"
+      `for role in roles/*.rb ; do knife role from file $role ; done`
+      
+      puts "#{ui.color("Finishing hatching and restarting chef-client", :cyan)}"
+      Net::SSH.start(server.public_ip_address, config[:ssh_user], :keys => [config[:identity_file]]) do |ssh|
+        ssh.exec! "cd /tmp/chef-hatch && sudo rake hatch:finish['#{bootstrap.config[:chef_node_name]}', '#{config[:run_list].join(' ')}']"
+        ssh.exec! "sudo /etc/init.d/chef-client restart"
+      end
+      
+      puts "#{ui.color("Removing temporary directory", :cyan)}"
+      FileUtils.rm_rf temp_dir
+      FileUtils.rm_rf tar_file_path
     end
    
     def locate_config_value(key)
@@ -341,6 +389,25 @@ module CjKnifePlugins
       # Amazon Virtual Private Cloud requires a subnet_id. If
       # present, do a few things differently
       !!config[:subnet_id]
+    end
+    
+    def setup_knife_config(server)
+      cwd = File.expand_path('./')
+      conf = <<-END_CONF
+        log_level                :info
+        log_location             STDOUT
+        node_name                'hatch'
+        client_key               '#{cwd}/.chef/hatch.pem'
+        validation_client_name   'chef-validator'
+        validation_key           '#{cwd}/.chef/validation.pem'
+        chef_server_url          'http://#{server.public_ip_address}:4000'
+        cache_type               'BasicFile'
+        cache_options( :path => '#{cwd}/.chef/checksums' )
+        cookbook_path [ '#{cwd}/cookbooks' ]
+      END_CONF
+      config_file = File.new("#{cwd}/.chef/knife.rb", "w")
+      config_file.write(conf)
+      config_file.close
     end
 
   end
