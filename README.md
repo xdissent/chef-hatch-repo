@@ -11,7 +11,7 @@ server without a pre-existing Chef server to manage it. If you're uncomfortable
 to bootstrap a live, self-managed Chef server using Chef Solo remotely.
 
 
-How it works
+How It Works
 ============
 
 Hatch contains a Knife plugin and Vagrant provisioner that are capable of
@@ -163,3 +163,77 @@ how to launch a node to be managed by the hatched Chef server:
     7 minutes ago, chef.local, chef.local, 10.0.2.15, ubuntu 10.04.
     2 minutes ago, demo.local, demo.local, 10.0.2.15, ubuntu 10.04.
 
+
+Working With EC2
+================
+
+The Hatch Knife plugin launches and provisions a live chef server as an EC2 
+instance. It takes the same options as the `knife-ec2` plugin's 
+`knife ec2 server create`:
+
+    Stewart:chef-hatch-repo(master) xdissent$ knife hatch -f m1.small -I ami-e4d42d8d -G chef,ssh,default -Z us-east-1c -N chef.xdissent.com -S xdissent -x ubuntu -i ~/.ssh/aws-xdissent.pem -A <aws-key-id> -K <aws-secret> --region us-east-1
+    WARNING: No knife configuration file found
+    Instance ID: i-d5d35ebb
+    Flavor: m1.small
+    Image: ami-e4d42d8d
+    Availability Zone: us-east-1c
+    Security Groups: chef, ssh, default
+    SSH Key: xdissent
+    
+    Waiting for server...........................
+    Public DNS Name: ec2-50-19-143-129.compute-1.amazonaws.com
+    Public IP Address: 50.19.143.129
+    Private DNS Name: ip-10-91-27-138.ec2.internal
+    Private IP Address: 10.91.27.138
+    
+    Waiting for sshd..done
+    Creating temporary directory
+    Creating solo config
+    Copying files to temporary directory
+    Creating chef-hatch tarball
+    …
+    Copying chef-hatch tarball to host
+    Warning: Permanently added '50.19.143.129' (RSA) to the list of known hosts.
+    chef-hatch.tgz                                                                                                                                                                                          100%   71KB  70.6KB/s   00:00    
+    Bootstrapping Chef on ec2-50-19-143-129.compute-1.amazonaws.com
+    0% [Working]3-129.compute-1.amazonaws.com 
+    Get:1 http://security.ubuntu.com lucid-security Release.gpg [198B]
+    Ign http://security.ubuntu.com/ubuntu/ lucid-security/main Translation-en_US   
+    Ign http://security.ubuntu.com/ubuntu/ lucid-security/universe Translation-en_US
+    96% [Connecting to us-east-1.ec2.archive.ubuntu.com (10.252.111.96)]           
+    Get:2 http://security.ubuntu.com lucid-security Release [44.7kB]    
+    0% [Connecting to us-east-1.ec2.archive.ubuntu.com (10.252.111.96)] [2 Release 
+    …
+    ec2-50-19-143-129.compute-1.amazonaws.com [Sun, 05 Jun 2011 03:06:47 +0000] INFO: Chef Run complete in 440.602521 seconds
+    ec2-50-19-143-129.compute-1.amazonaws.com [Sun, 05 Jun 2011 03:06:47 +0000] INFO: Running report handlers
+    ec2-50-19-143-129.compute-1.amazonaws.com [Sun, 05 Jun 2011 03:06:47 +0000] INFO: Report handlers complete
+    Creating admin user
+    Copying keys
+    Downloading keys
+    validation.pem                                                                                                                                                                                          100% 1675     1.6KB/s   00:00    
+    hatch.pem                                                                                                                                                                                               100% 1679     1.6KB/s   00:00    
+    Creating knife.rb
+    Uploading all cookbooks
+    Uploading all roles
+    Finishing hatching and restarting chef-client
+    Removing temporary directory
+    
+    Instance ID: i-d5d35ebb
+    Flavor: m1.small
+    Image: ami-e4d42d8d
+    Availability Zone: us-east-1c
+    Security Groups: default, ssh, chef
+    Public DNS Name: ec2-50-19-143-129.compute-1.amazonaws.com
+    Public IP Address: 50.19.143.129
+    Private DNS Name: ip-10-91-27-138.ec2.internal
+    SSH Key: xdissent
+    Private IP Address: 10.91.27.138
+    Root Device Type: instance-store
+    Environment: _default
+    Run List: role[chef_server]
+    Stewart:chef-hatch-repo(master) xdissent$ knife status
+    2 minutes ago, chef.xdissent.com, ec2-50-19-143-129.compute-1.amazonaws.com, 50.19.143.129, ubuntu 10.04.
+
+Like the `knife ec2 server create` command, `knife hatch` may be configured 
+using a `knife.rb` file, but **this file will be overwritten** each time you
+hatch a chef server! This will change in the future.

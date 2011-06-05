@@ -1,10 +1,10 @@
 gem 'chef', '=0.10.0'
 
-module CjKnifePlugins
+module HatchKnifePlugins
 
-  class CjHatch < Chef::Knife
+  class Hatch < Chef::Knife
   
-    banner "knife cj hatch (options)"
+    banner "knife hatch (options)"
     
     deps do
       require 'chef/knife/bootstrap'
@@ -404,6 +404,8 @@ module CjKnifePlugins
         cache_type               'BasicFile'
         cache_options( :path => '#{cwd}/.chef/checksums' )
         cookbook_path [ '#{cwd}/cookbooks' ]
+        knife[:aws_access_key_id]     = "#{locate_config_value(:aws_access_key_id)}"
+        knife[:aws_secret_access_key] = "#{locate_config_value(:aws_secret_access_key)}"
       END_CONF
       config_file = File.new("#{cwd}/.chef/knife.rb", "w")
       config_file.write(conf)
