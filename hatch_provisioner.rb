@@ -57,7 +57,7 @@ class HatchProvisioner < Vagrant::Provisioners::ChefSolo
     `for role in roles/*.rb ; do knife role from file $role ; done`
     
     vm.ssh.execute do |ssh|
-      ssh.exec!("cd /vagrant && sudo rake hatch:finish['#{config.client_name}', '#{config.run_list.join(' ')}']")
+      ssh.exec!("cd /vagrant && sudo rake hatch:finish['#{config.client_name}','#{config.run_list.join(' ')}']")
       ssh.exec!("sudo /etc/init.d/chef-client restart")
     end
 

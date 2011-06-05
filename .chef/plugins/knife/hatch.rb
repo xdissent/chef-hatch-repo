@@ -256,7 +256,7 @@ module CjKnifePlugins
         puts("done")
       }
    
-      bootstrap_for_node(server).run
+      bootstrap_for_node(server)
    
       puts "\n"
       puts "#{ui.color("Instance ID", :cyan)}: #{server.id}"
@@ -339,25 +339,25 @@ module CjKnifePlugins
       tar_file = "chef-hatch.tgz"
       tar_file_path = File.join(temp_base, tar_file)
       system("tar", "-C", temp_base, "-cvzf", tar_file_path, "chef-hatch")
-    
-      Net::SCP.start(server.public_ip_address, config[:ssh_user], :keys => [config[:identity_file]]) do |scp|
-        puts "#{ui.color("Copying chef-hatch tarball", :cyan)}"
-        scp.upload!(tar_file_path, "/tmp/#{tar_file}")
-      end
       
-      bootstrap
+      puts "#{ui.color("Copying chef-hatch tarball to host", :cyan)}"
+      system("scp", "-o", "StrictHostKeyChecking=no", "-i", config[:identity_file], tar_file_path, "#{config[:ssh_user]}@#{server.public_ip_address}:/tmp/#{tar_file}")
+      
+      bootstrap.run
       
       Net::SSH.start(server.public_ip_address, config[:ssh_user], :keys => [config[:identity_file]]) do |ssh|
+        puts "#{ui.color("Creating admin user", :cyan)}"
         ssh.exec! "cd /tmp/chef-hatch && sudo rake hatch:init['hatch']"
+        
+        puts "#{ui.color("Copying keys", :cyan)}"
         ssh.exec! "sudo chmod 666 /tmp/hatch.pem"
         ssh.exec! "sudo cp /etc/chef/validation.pem /tmp/chef-hatch/validation.pem"
         ssh.exec! "sudo chmod 666 /tmp/chef-hatch/validation.pem"
       end
       
-      Net::SCP.start(server.public_ip_address, config[:ssh_user], :keys => [config[:identity_file]]) do |scp|
-        scp.download!('/tmp/chef-hatch/validation.pem', './.chef/validation.pem')
-        scp.download!('/tmp/hatch.pem', './.chef/hatch.pem')
-      end
+      puts "#{ui.color("Downloading keys", :cyan)}"
+      system("scp", "-o", "StrictHostKeyChecking=no", "-i", config[:identity_file], "#{config[:ssh_user]}@#{server.public_ip_address}:/tmp/chef-hatch/validation.pem", "./.chef/validation.pem")
+      system("scp", "-o", "StrictHostKeyChecking=no", "-i", config[:identity_file], "#{config[:ssh_user]}@#{server.public_ip_address}:/tmp/hatch.pem", "./.chef/hatch.pem")
       
       # Create knife.rb
       puts "#{ui.color("Creating knife.rb", :cyan)}"
@@ -371,7 +371,7 @@ module CjKnifePlugins
       
       puts "#{ui.color("Finishing hatching and restarting chef-client", :cyan)}"
       Net::SSH.start(server.public_ip_address, config[:ssh_user], :keys => [config[:identity_file]]) do |ssh|
-        ssh.exec! "cd /tmp/chef-hatch && sudo rake hatch:finish['#{bootstrap.config[:chef_node_name]}', '#{config[:run_list].join(' ')}']"
+        ssh.exec! "cd /tmp/chef-hatch && sudo rake hatch:finish['#{bootstrap.config[:chef_node_name]}','#{config[:run_list].join(' ')}']"
         ssh.exec! "sudo /etc/init.d/chef-client restart"
       end
       

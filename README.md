@@ -160,5 +160,6 @@ how to launch a node to be managed by the hatched Chef server:
     : stdout
     [demo] : stdout
     Stewart:chef-hatch-repo(master) xdissent$ knife status
-    16 minutes ago, chef.local, chef.local, 10.0.2.15, ubuntu 10.04.
-    9 minutes ago, demo.local, demo.local, 10.0.2.15, ubuntu 10.04.
+    7 minutes ago, chef.local, chef.local, 10.0.2.15, ubuntu 10.04.
+    2 minutes ago, demo.local, demo.local, 10.0.2.15, ubuntu 10.04.
+
