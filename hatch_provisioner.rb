@@ -38,17 +38,23 @@ class HatchProvisioner < Vagrant::Provisioners::ChefSolo
   end
   
   def provision!
+  
+    vm.ssh.execute do |ssh|
+      env.ui.info "Creating /etc/chef"
+      ssh.exec!("sudo mkdir -p /etc/chef")
+    end
+  
     super
     
     vm.ssh.execute do |ssh|
       env.ui.info "Creating chef user #{config.client_name}"
-      ssh.exec!("cd /vagrant && sudo rake hatch:init['#{config.client_name}']  || true")
+      ssh.exec!("cd /vagrant && sudo rake hatch:init['#{config.client_name}']")
       
       env.ui.info "Grabbing client key"
       ssh.exec!("sudo cp /tmp/#{config.client_name}.pem /vagrant/#{config.client_key_path}")
       
       env.ui.info "Grabbing validation key"
-      ssh.exec!("sudo cp /etc/chef/validation.pem /vagrant/#{config.validation_key_path} || true")
+      ssh.exec!("sudo cp /etc/chef/validation.pem /vagrant/#{config.validation_key_path}")
     end
     
     setup_knife_config
