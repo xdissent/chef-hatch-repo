@@ -1,4 +1,4 @@
-require 'hatch_provisioner'
+require './hatch_provisioner'
 
 Vagrant::Config.run do |config|
 
