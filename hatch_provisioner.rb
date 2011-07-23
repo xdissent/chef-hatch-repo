@@ -77,8 +77,8 @@ class HatchProvisioner < Vagrant::Provisioners::ChefSolo
   def provision!
   
     vm.ssh.execute do |ssh|
-      env.ui.info "Creating /etc/chef"
-      ssh.exec!("sudo mkdir -p /etc/chef")
+      env.ui.info "Running hatch bootstrap"
+      ssh.exec!("sudo sh /vagrant/.chef/bootstrap/vagrant-hatch.sh")
     end
   
     super
