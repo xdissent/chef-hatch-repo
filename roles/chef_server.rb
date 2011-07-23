@@ -3,7 +3,6 @@ description "A Chef server"
 
 run_list(
     "role[chef_client]",
-    "recipe[build-essential]",
     "recipe[chef-server::rubygems-install]",
     "recipe[chef-server]"
 )
