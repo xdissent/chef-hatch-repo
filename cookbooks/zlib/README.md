@@ -1,24 +1,18 @@
-= DESCRIPTION:
+Description
+====
 
-Library provides a method to generate secure passwords for use in recipes.
+Installs development package for zlib.
 
-= REQUIREMENTS:
+Requirements
+====
 
-OpenSSL Ruby bindings must be installed, which are a requirement for Chef anyway.
+Debian, Ubuntu, CentOS, Red Hat, Scientific, Fedora, SUSE.
 
-= USAGE:
-
-Most often this will be used to generate a secure password for an attribute.
-
-    include Opscode::OpenSSL::Password
-
-    set_unless[:my_password] = secure_password
-
-= LICENSE and AUTHOR:
+License and Author
+====
 
 Author:: Joshua Timberman (<joshua@opscode.com>)
-
-Copyright:: 2009, Opscode, Inc
+Copyright:: 2009-2011, Opscode, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

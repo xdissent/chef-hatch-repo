@@ -1,4 +1,4 @@
-gem 'chef', '=0.10.0'
+gem 'chef', '=0.10.2'
 
 module HatchKnifePlugins
 

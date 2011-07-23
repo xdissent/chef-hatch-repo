@@ -1,5 +1,7 @@
 class HatchProvisioner < Vagrant::Provisioners::ChefSolo
 
+  extend Vagrant::Util::Counter    
+
   class Config < Vagrant::Provisioners::ChefSolo::Config
 
     # Provided by ChefSolo::Config
@@ -7,6 +9,7 @@ class HatchProvisioner < Vagrant::Provisioners::ChefSolo
     # attr_accessor :roles_path
     # attr_accessor :data_bags_path
     # attr_accessor :recipe_url
+    # attr_accessor :nfs
 
     # Would be provided by ChefServer::Config
     # attr_accessor :chef_server_url  # Determined during prepare
@@ -37,11 +40,45 @@ class HatchProvisioner < Vagrant::Provisioners::ChefSolo
     super
   end
   
+  # Converts paths to a list of properly expanded paths with types.
+  def expanded_folders(paths)
+    # Convert the path to an array if it is a string or just a single
+    # path element which contains the folder location (:host or :vm)
+    paths = [paths] if paths.is_a?(String) || paths.first.is_a?(Symbol)
+  
+    paths.map do |path|
+      path = [:host, path] if !path.is_a?(Array)
+      type, path = path
+  
+      # Create the local/remote path based on whether this is a host
+      # or VM path.
+      local_path = nil
+      local_path = File.expand_path(path, env.root_path) if type == :host
+      remote_path = type == :host ? "#{config.provisioning_path}/chef-solo-#{self.class.get_and_update_counter}" : path
+  
+      # Return the result
+      [type, local_path, remote_path]
+    end
+  end
+  
+  # Shares the given folders with the given prefix. The folders should
+  # be of the structure resulting from the `expanded_folders` function.
+  def share_folders(prefix, folders)
+    index = 0
+    folders.each do |type, local_path, remote_path|
+      if type == :host
+        env.config.vm.share_folder("v-#{prefix}-#{type}-#{index}",
+                                   remote_path, local_path, :nfs => config.nfs)
+        index += 1
+      end
+    end
+  end
+  
   def provision!
   
     vm.ssh.execute do |ssh|
-      env.ui.info "Creating /etc/chef"
-      ssh.exec!("sudo mkdir -p /etc/chef")
+      env.ui.info "Running hatch bootstrap"
+      ssh.exec!("sudo sh /vagrant/.chef/bootstrap/vagrant-hatch.sh")
     end
   
     super

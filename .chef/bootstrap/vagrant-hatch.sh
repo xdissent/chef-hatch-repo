@@ -10,16 +10,6 @@ if [ ! -f /usr/bin/chef-client ]; then
 fi
 
 gem install ohai --no-rdoc --no-ri --verbose
-gem install chef --no-rdoc --no-ri --verbose <%= bootstrap_version_string %>
+gem install chef --no-rdoc --no-ri --verbose
 
-mkdir -p /etc/chef
-
-cd /tmp && tar -zxvf chef-hatch.tgz
-
-(
-cat <<'EOP'
-<%= { "run_list" => @run_list }.to_json %>
-EOP
-) > /tmp/chef-hatch/dna.json
-
-/usr/bin/chef-solo -c /tmp/chef-hatch/solo.rb -j /tmp/chef-hatch/dna.json'
+mkdir -p /etc/chef'
