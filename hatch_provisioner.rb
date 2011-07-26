@@ -21,6 +21,7 @@ class HatchProvisioner < Vagrant::Provisioners::ChefSolo
     def initialize
       super
       @roles_path = "roles"
+      @data_bags_path = "data_bags"
       @validation_key_path = ".chef/validation.pem"
       @validation_client_name = "chef-validator"
       @client_key_path = ".chef/hatch.pem"
