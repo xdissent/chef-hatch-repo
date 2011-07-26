@@ -8,6 +8,7 @@ if [ ! -f /usr/bin/chef-client ]; then
   cd rubygems-1.3.7
   ruby setup.rb --no-format-executable
 
+  gem install rake --no-rdoc --no-ri --verbose
   gem install ohai --no-rdoc --no-ri --verbose
 
   cd /tmp
