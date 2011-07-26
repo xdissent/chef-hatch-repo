@@ -7,7 +7,7 @@ Vagrant::Config.run do |config|
 
     vm_config.vm.host_name = "chef.local"
     vm_config.vm.network("192.168.10.10")
-    vm_config.vm.box = "lucid64-chef-0.10.2"
+    vm_config.vm.box = "lucid64"
     vm_config.vm.box_url = "http://files.vagrantup.com/lucid64.box"
     vm_config.vm.provision HatchProvisioner do |chef|
       chef.node_name = "chef.local"
@@ -19,7 +19,7 @@ Vagrant::Config.run do |config|
   config.vm.define :demo do |vm_config|
     vm_config.vm.host_name = "demo.local"
     vm_config.vm.network("192.168.10.11")
-    vm_config.vm.box = "lucid64-chef-0.10.2"
+    vm_config.vm.box = "lucid64"
     vm_config.vm.box_url = "http://files.vagrantup.com/lucid64.box"
     vm_config.vm.provision :chef_client do |chef|
       chef.chef_server_url = "http://192.168.10.10:4000"
