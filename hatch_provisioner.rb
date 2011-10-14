@@ -68,21 +68,6 @@ class HatchProvisioner < Vagrant::Provisioners::ChefSolo
 
   end
   
-  def setup_solo_config
-    cookbooks_path = guest_paths(@cookbook_folders)
-    roles_path = guest_paths(@role_folders)
-    data_bags_path = guest_paths(@data_bags_folders).first
-
-    setup_config("chef_solo_solo", "solo.rb", {
-      :node_name => config.node_name,
-      :provisioning_path => config.provisioning_path,
-      :cookbooks_path => cookbooks_path,
-      :recipe_url => config.recipe_url,
-      :roles_path => roles_path,
-      :data_bags_path => data_bags_path,
-    })
-  end
-  
   def setup_knife_config
     cwd = File.expand_path(File.dirname(__FILE__))
     conf = <<-END_CONF
