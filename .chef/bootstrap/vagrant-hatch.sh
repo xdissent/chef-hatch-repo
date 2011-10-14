@@ -10,6 +10,7 @@ if [ ! -f /usr/bin/chef-client ]; then
 
   gem install ohai --no-rdoc --no-ri --verbose
   gem install chef --no-rdoc --no-ri --verbose
+  gem install rake --no-rdoc --no-ri --verbose
 fi
 
 mkdir -p /etc/chef'
