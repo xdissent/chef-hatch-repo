@@ -21,6 +21,7 @@ class HatchProvisioner < Vagrant::Provisioners::ChefSolo
     def initialize
       super
       @roles_path = "roles"
+      @data_bags_path = "data_bags"
       @validation_key_path = ".chef/validation.pem"
       @validation_client_name = "chef-validator"
       @client_key_path = ".chef/hatch.pem"
@@ -65,6 +66,21 @@ class HatchProvisioner < Vagrant::Provisioners::ChefSolo
       ssh.exec!("sudo /etc/init.d/chef-client restart")
     end
 
+  end
+  
+  def setup_solo_config
+    cookbooks_path = guest_paths(@cookbook_folders)
+    roles_path = guest_paths(@role_folders)
+    data_bags_path = guest_paths(@data_bags_folders).first
+
+    setup_config("chef_solo_solo", "solo.rb", {
+      :node_name => config.node_name,
+      :provisioning_path => config.provisioning_path,
+      :cookbooks_path => cookbooks_path,
+      :recipe_url => config.recipe_url,
+      :roles_path => roles_path,
+      :data_bags_path => data_bags_path,
+    })
   end
   
   def setup_knife_config
