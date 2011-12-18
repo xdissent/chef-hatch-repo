@@ -75,8 +75,9 @@ namespace :hatch do
     c.cdb_save
     puts "Created #{args.client_name} admin client."
   end
-  task :finish, :node_name, :run_list do |t, args|
+  task :finish, :node_name, :run_list, :environ do |t, args|
     n = Chef::Node.cdb_load(args.node_name)
+    n.chef_environment(args.environ)
     n.run_list.reset!(args.run_list.split)
     n.cdb_save
   end
