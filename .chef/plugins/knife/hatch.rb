@@ -1,4 +1,4 @@
-gem 'chef', '=0.10.2'
+gem 'chef', '=0.10.8'
 
 module HatchKnifePlugins
 
@@ -368,10 +368,35 @@ module HatchKnifePlugins
       
       puts "#{ui.color("Uploading all roles", :cyan)}"
       `for role in roles/*.rb ; do knife role from file $role ; done`
+
+      # Find and upload all data bags
+      dbag_glob = File.expand_path("./data_bags") + "/*/*.json"
+      dbags = []
+      Dir.glob(dbag_glob) do |f|
+        bag = File.basename(File.dirname(f))
+        item = File.basename(f)
+        unless dbags.include? bag
+          dbags << bag
+          msg = "Creating data bag #{bag}"
+          puts "#{ui.color(msg, :cyan)}"
+          `knife data bag create #{bag}`
+        end
+        msg = "Uploading data bag item #{item} in #{bag}"
+        puts "#{ui.color(msg, :cyan)}"
+        `knife data bag from file #{bag} #{item}`
+      end
+
+      # Create environments
+      env_glob = File.expand_path("./environments") + "/*.rb"
+      Dir.glob(env_glob) do |f|
+        msg = "Uploading environment #{f}"
+        puts "#{ui.color(msg, :cyan)}"
+        `knife environment from file #{File.basename(f)}`
+      end
       
       puts "#{ui.color("Finishing hatching and restarting chef-client", :cyan)}"
       Net::SSH.start(server.public_ip_address, config[:ssh_user], :keys => [config[:identity_file]]) do |ssh|
-        ssh.exec! "cd /tmp/chef-hatch && sudo rake hatch:finish['#{bootstrap.config[:chef_node_name]}','#{config[:run_list].join(' ')}']"
+        ssh.exec! "cd /tmp/chef-hatch && sudo rake hatch:finish['#{bootstrap.config[:chef_node_name]}','#{config[:run_list].join(' ')}','#{config[:environment]}']"
         ssh.exec! "sudo /etc/init.d/chef-client restart"
       end
       
