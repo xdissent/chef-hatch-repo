@@ -10,7 +10,7 @@ if [ ! -f /usr/bin/chef-client ]; then
 fi
 
 gem install ohai --no-rdoc --no-ri --verbose
-gem install chef --no-rdoc --no-ri --verbose <%= bootstrap_version_string %>
+gem install chef --no-rdoc --no-ri --verbose --version 0.10.8
 
 mkdir -p /etc/chef
 

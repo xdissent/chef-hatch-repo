@@ -1,9 +1,9 @@
-rvm ruby-1.8.7-p249@chef-hatch-repo --create
+rvm use 1.9.3@chef-hatch-repo-0.1.2 --create
 
 if ! command -v knife ; then
-  gem install chef -v 0.10.4
+  gem install chef --no-rdoc --no-ri --version 0.10.8
 fi
 
 if ! command -v vagrant ; then
-  gem install vagrant -v 0.8.7
+  gem install vagrant --no-rdoc --no-ri --version 0.8.10
 fi

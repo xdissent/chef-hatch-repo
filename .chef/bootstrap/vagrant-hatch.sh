@@ -9,7 +9,7 @@ if [ ! -f /usr/bin/chef-client ]; then
   ruby setup.rb --no-format-executable
 
   gem install ohai --no-rdoc --no-ri --verbose
-  gem install chef --no-rdoc --no-ri --verbose
+  gem install chef --no-rdoc --no-ri --verbose --version 0.10.8
   gem install rake --no-rdoc --no-ri --verbose
 fi
 

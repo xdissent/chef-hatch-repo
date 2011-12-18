@@ -11,6 +11,7 @@ Vagrant::Config.run do |config|
     vm_config.vm.box_url = "http://files.vagrantup.com/lucid64.box"
     vm_config.vm.provision HatchProvisioner do |chef|
       chef.node_name = "chef.local"
+      chef.environment = "production"
       chef.add_role("chef_server")
     end
   end

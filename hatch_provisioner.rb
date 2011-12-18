@@ -81,6 +81,7 @@ class HatchProvisioner < Vagrant::Provisioners::ChefSolo
       cache_type               'BasicFile'
       cache_options( :path => '#{cwd}/.chef/checksums' )
       cookbook_path [ '#{cwd}/cookbooks' ]
+      environment '#{config.environment}'
     END_CONF
     config_file = File.new("#{cwd}/.chef/knife.rb", "w")
     config_file.write(conf)
