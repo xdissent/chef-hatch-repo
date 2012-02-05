@@ -5,5 +5,5 @@ if ! command -v knife ; then
 fi
 
 if ! command -v vagrant ; then
-  gem install vagrant --no-rdoc --no-ri --version 0.8.10
+  gem install vagrant --no-rdoc --no-ri --version 0.9.4
 fi
