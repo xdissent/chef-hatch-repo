@@ -2,6 +2,18 @@ en:
   vagrant:
     provisioners:
       hatch:
+        running_bootstrap: Running hatch bootstrap
+        creating_chef_user: Creating chef user %{name}
+        copy_client_key: Grabbing client key
+        copy_validation_key: Grabbing validation key
+        uploading_cookbooks: Uploading cookbooks
+        uploading_roles: Uploading roles
+        creating_data_bag: Creating data bag
+        uploading_data_bag: Uploading data bag item %{item} in %{bag}
+        uploading_environment: Uploading environment %{name}
+        running_hatch_finish: Running hatch finish rake task
+        restarting_chef_client: Restarting chef client
+        wrote_configuration: "Wrote configuration:\n %{conf}"
         require_chef_ip: |-
           Must specify IP used to contact VM from host
           

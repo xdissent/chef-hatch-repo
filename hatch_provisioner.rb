@@ -2,8 +2,9 @@ I18n.load_path << File.expand_path("../locales/en.yml", __FILE__)
 
 class HatchProvisioner < Vagrant::Provisioners::ChefSolo
 
+  I18N_NAMESPACE = "vagrant.provisioners.hatch"
   class HatchError < Vagrant::Errors::VagrantError
-    error_namespace("vagrant.provisioners.hatch")
+    error_namespace(I18N_NAMESPACE)
   end
 
   class Config < Vagrant::Provisioners::ChefSolo::Config
@@ -53,26 +54,26 @@ class HatchProvisioner < Vagrant::Provisioners::ChefSolo
   end
 
   def provision!
-    env[:ui].info "Running hatch bootstrap"
+    env[:ui].info I18n.t("#{I18N_NAMESPACE}.running_bootstrap")
     env[:vm].channel.sudo("sh /vagrant/.chef/bootstrap/vagrant-hatch.sh")
   
     super
 
-    env[:ui].info "Creating chef user #{config.client_name}"
+    env[:ui].info I18n.t("#{I18N_NAMESPACE}.creating_chef_user", :name => config.client_name)
     env[:vm].channel.sudo("cd /vagrant && rake hatch:init['#{config.client_name}']")
-    env[:ui].info "Grabbing client key"
+    env[:ui].info I18n.t("#{I18N_NAMESPACE}.copy_client_key")
     env[:vm].channel.sudo("cp /tmp/#{config.client_name}.pem /vagrant/#{config.client_key_path}")
       
-    env[:ui].info "Grabbing validation key"
+    env[:ui].info I18n.t("#{I18N_NAMESPACE}.copy_validation_key")
     env[:vm].channel.sudo("cp /etc/chef/validation.pem /vagrant/#{config.validation_key_path}")
 
     setup_knife_config
     
     # Upload cookbooks and roles
-    env[:ui].info "Uploading cookbooks"
+    env[:ui].info I18n.t("#{I18N_NAMESPACE}.uploading_cookbooks")
     `knife cookbook upload --all`
 
-    env[:ui].info "Uploading roles"
+    env[:ui].info I18n.t("#{I18N_NAMESPACE}.uploading_roles")
     `for role in roles/*.rb ; do knife role from file $role ; done`
 
     # Find and upload all data bags
@@ -83,25 +84,25 @@ class HatchProvisioner < Vagrant::Provisioners::ChefSolo
       item = File.basename(f)
       unless dbags.include? bag
         dbags << bag
-        env[:ui].info "Creating data bag"
+        env[:ui].info I18n.t("#{I18N_NAMESPACE}.creating_data_bag")
         `knife data bag create #{bag}`
       end
-      env[:ui].info "Uploading data bag item #{item} in #{bag}"
+      env[:ui].info I18n.t("#{I18N_NAMESPACE}.uploading_data_bag", :item => item, :bag => bag)
       `knife data bag from file #{bag} #{item}`
     end
 
     # Create environments
     env_glob = File.expand_path(File.join(File.dirname(__FILE__), "/environments")) + "/*.rb"
     Dir.glob(env_glob) do |f|
-      env[:ui].info "Uploading environment #{f}"
+      env[:ui].info I18n.t("#{I18N_NAMESPACE}.uploading_environment", :name => f)
       `knife environment from file #{File.basename(f)}`
     end
     
     n = config.node_name || env.config.vm.host_name
 
-    env[:ui].info "Running hatch finish rake task"
+    env[:ui].info I18n.t("#{I18N_NAMESPACE}.running_hatch_finish")
     env[:vm].channel.sudo("cd /vagrant && rake hatch:finish['#{n}','#{config.run_list.join(' ')}','#{config.environment}']")
-    env[:ui].info "Restarting chef client"
+    env[:ui].info I18n.t("#{I18N_NAMESPACE}.restarting_chef_client")
     env[:vm].channel.sudo("/etc/init.d/chef-client restart")
 
   end
@@ -123,7 +124,6 @@ class HatchProvisioner < Vagrant::Provisioners::ChefSolo
     config_file = File.new("#{cwd}/.chef/knife.rb", "w")
     config_file.write(conf)
     config_file.close
-    env[:ui].info "Wrote config:"
-    env[:ui].info(conf)
+    env[:ui].info I18n.t("#{I18N_NAMESPACE}.wrote_configuration", :conf => conf)
   end
 end
