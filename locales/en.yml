@@ -1,0 +1,11 @@
+en:
+  vagrant:
+    provisioners:
+      hatch:
+        require_chef_ip: |-
+          Must specify IP used to contact VM from host
+          
+          When vagrant does not know the IP of the VM, you must specify it
+          in chef_ip key of the HatchProvisioner configuration.
+          It is used by knife to upload the cookbooks etc to the VM's chef
+          solo during bootstrapping.
