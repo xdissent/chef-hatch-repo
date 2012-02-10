@@ -268,13 +268,14 @@ module HatchKnifePlugins
       print "\n#{ui.color("Waiting for sshd", :magenta)}"
 
       ssh_address = server.dns_name
+      public_dns_name = server.dns_name
       if ( config[:ip] || (config[:ensure_public_ip] and server.public_ip_address == server.private_ip_address) )
         public_ip = set_public_ip(connection, server, config[:ip])
-        ssh_address = public_ip
         if public_ip.nil?
           ui.error("Unable to assign a public IP to instance #{server.id}")
           exit 1
         end
+        public_dns_name = public_ip
         ssh_address = public_ip
         print "\n#{ui.color("\nServer got public IP #{public_ip}", :magenta)}"
       end
@@ -296,8 +297,8 @@ module HatchKnifePlugins
       if vpc_mode?
         puts "#{ui.color("Subnet ID", :cyan)}: #{server.subnet_id}"
       else
-        puts "#{ui.color("Public DNS Name", :cyan)}: #{server.dns_name}"
-        puts "#{ui.color("Public IP Address", :cyan)}: #{server.public_ip_address}"
+        puts "#{ui.color("Public DNS Name", :cyan)}: #{public_dns_name}"
+        puts "#{ui.color("Public IP Address", :cyan)}: #{ssh_address}"
         puts "#{ui.color("Private DNS Name", :cyan)}: #{server.private_dns_name}"
       end
       puts "#{ui.color("SSH Key", :cyan)}: #{server.key_name}"
@@ -375,7 +376,7 @@ module HatchKnifePlugins
       
       bootstrap.run
       
-      Net::SSH.start(server.public_ip_address, config[:ssh_user], :keys => [config[:identity_file]]) do |ssh|
+      Net::SSH.start(ssh_address, config[:ssh_user], :keys => [config[:identity_file]]) do |ssh|
         puts "#{ui.color("Creating admin user", :cyan)}"
         ssh.exec! "cd /tmp/chef-hatch && sudo rake hatch:init['hatch']"
         
@@ -391,7 +392,7 @@ module HatchKnifePlugins
       
       # Create knife.rb
       puts "#{ui.color("Creating knife.rb", :cyan)}"
-      setup_knife_config(server)
+      setup_knife_config(server, ssh_address)
       
       puts "#{ui.color("Uploading all cookbooks", :cyan)}"
       `knife cookbook upload --all`
@@ -425,7 +426,7 @@ module HatchKnifePlugins
       end
       
       puts "#{ui.color("Finishing hatching and restarting chef-client", :cyan)}"
-      Net::SSH.start(server.public_ip_address, config[:ssh_user], :keys => [config[:identity_file]]) do |ssh|
+      Net::SSH.start(ssh_address, config[:ssh_user], :keys => [config[:identity_file]]) do |ssh|
         ssh.exec! "cd /tmp/chef-hatch && sudo rake hatch:finish['#{bootstrap.config[:chef_node_name]}','#{config[:run_list].join(' ')}','#{config[:environment]}']"
         ssh.exec! "sudo /etc/init.d/chef-client restart"
       end
@@ -446,7 +447,7 @@ module HatchKnifePlugins
       !!config[:subnet_id]
     end
     
-    def setup_knife_config(server)
+    def setup_knife_config(server, ssh_address)
       cwd = File.expand_path('./')
       conf = <<-END_CONF
         log_level                :info
@@ -455,7 +456,7 @@ module HatchKnifePlugins
         client_key               '#{cwd}/.chef/hatch.pem'
         validation_client_name   'chef-validator'
         validation_key           '#{cwd}/.chef/validation.pem'
-        chef_server_url          'http://#{server.public_ip_address}:4000'
+        chef_server_url          'http://#{ssh_address}:4000'
         cache_type               'BasicFile'
         cache_options( :path => '#{cwd}/.chef/checksums' )
         cookbook_path [ '#{cwd}/cookbooks' ]
