@@ -343,6 +343,7 @@ module HatchKnifePlugins
       puts "#{ui.color("Creating temporary directory", :cyan)}"
       temp_base = Dir.tmpdir
       temp_dir = File.join(temp_base, "chef-hatch")
+      FileUtils.remove_dir(temp_dir, :force => true)
       FileUtils.mkdir(temp_dir)
       
       puts "#{ui.color("Creating solo config", :cyan)}"
