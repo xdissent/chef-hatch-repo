@@ -140,7 +140,23 @@ module HatchKnifePlugins
       :description => "Disable host key verification",
       :boolean => true,
       :default => false
+
+    option :ec2_api_endpoint,
+      :long => "--ec2-api-endpoint ENDPOINT",
+      :description => "Your EC2 API endpoint",
+      :proc => Proc.new { |endpoint| Chef::Config[:knife][:ec2_api_endpoint] = endpoint }
    
+    option :ensure_public_ip,
+      :long => "--ensure-public-ip",
+      :description => "Ensure server gets a public IP",
+      :boolean => true,
+      :default => false
+
+    option :ip,
+      :long => "--ip IP",
+      :description => "Force the public IP",
+      :default => nil
+
     def tcp_test_ssh(hostname)
       tcp_socket = TCPSocket.new(hostname, 22)
       readable = IO.select([tcp_socket], nil, nil, 5)
@@ -174,7 +190,8 @@ module HatchKnifePlugins
         :provider => 'AWS',
         :aws_access_key_id => Chef::Config[:knife][:aws_access_key_id],
         :aws_secret_access_key => Chef::Config[:knife][:aws_secret_access_key],
-        :region => locate_config_value(:region)
+        :region => locate_config_value(:region),
+        :endpoint => Chef::Config[:knife][:ec2_api_endpoint]
       )
    
       ami = connection.images.get(locate_config_value(:image))
@@ -249,14 +266,26 @@ module HatchKnifePlugins
       puts "#{ui.color("Private IP Address", :cyan)}: #{server.private_ip_address}"
    
       print "\n#{ui.color("Waiting for sshd", :magenta)}"
-   
-      ip_to_test = vpc_mode? ? server.private_ip_address : server.public_ip_address
+
+      ssh_address = server.dns_name
+      if ( config[:ip] || (config[:ensure_public_ip] and server.public_ip_address == server.private_ip_address) )
+        public_ip = set_public_ip(connection, server, config[:ip])
+        ssh_address = public_ip
+        if public_ip.nil?
+          ui.error("Unable to assign a public IP to instance #{server.id}")
+          exit 1
+        end
+        ssh_address = public_ip
+        print "\n#{ui.color("\nServer got public IP #{public_ip}", :magenta)}"
+      end
+
+      ip_to_test = vpc_mode? ? server.private_ip_address : ssh_address
       print(".") until tcp_test_ssh(ip_to_test) {
         sleep @initial_sleep_delay ||= (vpc_mode? ? 40 : 10)
         puts("done")
       }
    
-      bootstrap_for_node(server)
+      bootstrap_for_node(server, ip_to_test)
    
       puts "\n"
       puts "#{ui.color("Instance ID", :cyan)}: #{server.id}"
@@ -292,9 +321,9 @@ module HatchKnifePlugins
       puts "#{ui.color("Run List", :cyan)}: #{config[:run_list].join(', ')}"
     end
    
-    def bootstrap_for_node(server)
+    def bootstrap_for_node(server, ssh_address)
       bootstrap = Chef::Knife::Bootstrap.new
-      bootstrap.name_args = [vpc_mode? ? server.private_ip_address : server.dns_name ]
+      bootstrap.name_args = [ ssh_address ]
       bootstrap.config[:run_list] = config[:run_list]
       bootstrap.config[:ssh_user] = config[:ssh_user]
       bootstrap.config[:identity_file] = config[:identity_file]
@@ -341,7 +370,7 @@ module HatchKnifePlugins
       system("tar", "-C", temp_base, "-cvzf", tar_file_path, "chef-hatch")
       
       puts "#{ui.color("Copying chef-hatch tarball to host", :cyan)}"
-      system("scp", "-o", "StrictHostKeyChecking=no", "-i", config[:identity_file], tar_file_path, "#{config[:ssh_user]}@#{server.public_ip_address}:/tmp/#{tar_file}")
+      system("scp", "-o", "StrictHostKeyChecking=no", "-i", config[:identity_file], tar_file_path, "#{config[:ssh_user]}@#{ssh_address}:/tmp/#{tar_file}")
       
       bootstrap.run
       
@@ -356,8 +385,8 @@ module HatchKnifePlugins
       end
       
       puts "#{ui.color("Downloading keys", :cyan)}"
-      system("scp", "-o", "StrictHostKeyChecking=no", "-i", config[:identity_file], "#{config[:ssh_user]}@#{server.public_ip_address}:/tmp/chef-hatch/validation.pem", "./.chef/validation.pem")
-      system("scp", "-o", "StrictHostKeyChecking=no", "-i", config[:identity_file], "#{config[:ssh_user]}@#{server.public_ip_address}:/tmp/hatch.pem", "./.chef/hatch.pem")
+      system("scp", "-o", "StrictHostKeyChecking=no", "-i", config[:identity_file], "#{config[:ssh_user]}@#{ssh_address}:/tmp/chef-hatch/validation.pem", "./.chef/validation.pem")
+      system("scp", "-o", "StrictHostKeyChecking=no", "-i", config[:identity_file], "#{config[:ssh_user]}@#{ssh_address}:/tmp/hatch.pem", "./.chef/hatch.pem")
       
       # Create knife.rb
       puts "#{ui.color("Creating knife.rb", :cyan)}"
@@ -435,6 +464,12 @@ module HatchKnifePlugins
       config_file = File.new("#{cwd}/.chef/knife.rb", "w")
       config_file.write(conf)
       config_file.close
+    end
+
+    def set_public_ip(connection, server, forced_ip)
+      ip = forced_ip || connection.describe_addresses.body["addressesSet"].find_all{|x| x["instanceId"] == nil }.map{ |x| x["publicIp"] }[0] || connection.allocate_address.body
+      connection.associate_address(server.id, ip).body
+      return ip
     end
 
   end
