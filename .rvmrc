@@ -1,5 +1,10 @@
 rvm use 1.9.3@chef-hatch-repo-0.1.2 --create
 
+if ! command -v bundle ; then
+  gem install bundle --no-rdoc --no-ri
+  bundle
+fi
+
 if ! command -v knife ; then
   gem install chef --no-rdoc --no-ri --version 0.10.8
 fi
