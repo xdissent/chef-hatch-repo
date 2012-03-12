@@ -37,6 +37,7 @@ Requirements
 * Virtualbox (>= 4.1.0)
 * Vagrant (>= 1.0.0)
 * Chef (>= 0.10.8)
+* Knife-EC2 (>= 0.5.10)
 
 
 Suggested
