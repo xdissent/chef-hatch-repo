@@ -35,7 +35,7 @@ Requirements
 ============
 
 * Virtualbox (>= 4.1.0)
-* Vagrant (>= 0.8.10)
+* Vagrant (>= 1.0.0)
 * Chef (>= 0.10.8)
 
 
