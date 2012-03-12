@@ -3,6 +3,7 @@ I18n.load_path << File.expand_path("../locales/en.yml", __FILE__)
 class HatchProvisioner < Vagrant::Provisioners::ChefSolo
 
   I18N_NAMESPACE = "vagrant.provisioners.hatch"
+
   class HatchError < Vagrant::Errors::VagrantError
     error_namespace(I18N_NAMESPACE)
   end
@@ -25,21 +26,14 @@ class HatchProvisioner < Vagrant::Provisioners::ChefSolo
     # Hatch-specific
     attr_accessor :client_name
     attr_accessor :chef_ip
-    
-    def initialize
-      super
-      @roles_path = "roles"
-      @data_bags_path = "data_bags"
-      @validation_key_path = ".chef/validation.pem"
-      @validation_client_name = "chef-validator"
-      @client_key_path = ".chef/hatch.pem"
-      @environment = "_default"
-      @client_name = "hatch"
-    end
 
-    def validate(env, errors)
-      super
-    end
+    def validation_client_name; @validation_client_name || "chef-validator"; end
+    def validation_key_path; @validation_key_path || ".chef/validation.pem"; end
+    def client_key_path; @client_key_path || ".chef/hatch.pem"; end
+    def roles_path; @roles_path || "roles"; end
+    def data_bags_path; @data_bags_path || "data_bags"; end
+    def client_name; @client_name || "hatch"; end
+    def environment; @environment || "_default"; end
   end
 
   def self.config_class
