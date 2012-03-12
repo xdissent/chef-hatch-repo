@@ -1,3 +1,10 @@
+## 0.1.3 (March 12, 2011)
+
+  - Support for Vagrant 1.0.0 (https://github.com/xdissent/chef-hatch-repo/pull/3)
+  - Add knife-ec2 gem to .rvmrc
+  - Add Openstack EC2 compatible endpoints (https://github.com/xdissent/chef-hatch-repo/pull/4)
+  - Add production and development default environments
+
 ## 0.1.2 (October 15, 2011)
 
   - Support for Chef 0.10.8

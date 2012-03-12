@@ -10,6 +10,8 @@ ServerRoot "<%= node[:apache][:dir] %>"
 #
 <% if node[:platform] == "debian" || node[:platform] == "ubuntu" -%>
 LockFile /var/lock/apache2/accept.lock
+<% elsif node[:platform] == "freebsd" -%>
+LockFile /var/log/accept.lock
 <% else %>
 LockFile logs/accept.lock
 <% end -%>
@@ -127,7 +129,7 @@ HostnameLookups Off
 # logged here.  If you *do* define an error logfile for a <VirtualHost>
 # container, that host's errors will be logged there and not here.
 #
-ErrorLog <%= node[:apache][:log_dir] %>/error.log 
+ErrorLog <%= node[:apache][:log_dir] %>/<%= node[:apache][:error_log] %>
 
 #
 # LogLevel: Control the number of messages logged to the error_log.
@@ -136,9 +138,19 @@ ErrorLog <%= node[:apache][:log_dir] %>/error.log
 #
 LogLevel warn
 
+# COOK-1021: Dummy LoadModule directive to aid module installations
+#LoadModule dummy_module modules/mod_dummy.so
+
 # Include module configuration:
 Include <%= node[:apache][:dir] %>/mods-enabled/*.load
 Include <%= node[:apache][:dir] %>/mods-enabled/*.conf
+
+<% if node[:platform] == "freebsd" -%>
+<IfDefine NOHTTPACCEPT>
+   AcceptFilter http none
+   AcceptFilter https none
+</IfDefine>
+<% end %>
 
 # Include ports listing
 Include <%= node[:apache][:dir] %>/ports.conf
