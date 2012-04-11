@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+#^syntax detection
+
+site 'http://community.opscode.com/api/v1'
+
+cookbook 'apache2'
+cookbook 'apt'
+cookbook 'bluepill'
+cookbook 'build-essential'
+cookbook 'chef-client'
+cookbook 'chef-server'
+cookbook 'couchdb'
+cookbook 'daemontools'
+cookbook 'erlang'
+cookbook 'gecode'
+cookbook 'java'
+cookbook 'nginx'
+cookbook 'openssl'
+cookbook 'runit'
+cookbook 'ucspi-tcp'
+cookbook 'xml'
+cookbook 'yum'
+cookbook 'zlib'
