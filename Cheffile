@@ -3,21 +3,21 @@
 
 site 'http://community.opscode.com/api/v1'
 
-cookbook 'apache2',         "1.1.2"
-cookbook 'apt',             "1.4.0"
-cookbook 'bluepill',        "1.0.2"
-cookbook 'build-essential', "1.0.0"
-cookbook 'chef-client',     "1.1.2"
-cookbook 'chef-server',     "0.99.12"
-cookbook 'couchdb',         "1.0.0"
-cookbook 'daemontools',     "0.9.0"
-cookbook 'erlang',          "1.0.0"
-cookbook 'gecode',          "1.2.0"
-cookbook 'java',            "1.4.2"
-cookbook 'nginx',           "0.100.2"
-cookbook 'openssl',         "1.0.0"
-cookbook 'runit',           "0.15.0"
-cookbook 'ucspi-tcp',       "1.0.0"
-cookbook 'xml',             "1.0.2"
-cookbook 'yum',             "0.5.2"
-cookbook 'zlib',            "1.0.0"
+cookbook 'apache2'
+cookbook 'apt'
+cookbook 'bluepill'
+cookbook 'build-essential'
+cookbook 'chef-client'
+cookbook 'chef-server'
+cookbook 'couchdb'
+cookbook 'daemontools'
+cookbook 'erlang'
+cookbook 'gecode'
+cookbook 'java'
+cookbook 'nginx'
+cookbook 'openssl'
+cookbook 'runit'
+cookbook 'ucspi-tcp'
+cookbook 'xml'
+cookbook 'yum'
+cookbook 'zlib'
