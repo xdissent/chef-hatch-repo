@@ -8,3 +8,7 @@ fi
 if ! command -v vagrant ; then
   gem install vagrant --no-rdoc --no-ri --version 1.0.0
 fi
+
+if ! command -v librarian-chef ; then
+  gem install librarian --no-rdoc --no-ri --version 0.0.14
+fi
