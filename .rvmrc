@@ -6,7 +6,7 @@ if ! command -v knife ; then
 fi
 
 if ! command -v vagrant ; then
-  gem install vagrant --no-rdoc --no-ri --version 1.0.0
+  gem install vagrant --no-rdoc --no-ri --version 1.0.2
 fi
 
 if ! command -v librarian-chef ; then
