@@ -38,6 +38,7 @@ Requirements
 * Vagrant (>= 1.0.0)
 * Chef (>= 0.10.8)
 * Knife-EC2 (>= 0.5.10)
+* Librarian (>= 0.0.14)
 
 
 Suggested
@@ -65,6 +66,7 @@ repository. To begin, clone the Hatch repository::
     
 Then hatch a Chef server in a virtual machine::
 
+    Stewart:chef-hatch-repo(master) xdissent$ librarian-chef install
     Stewart:chef-hatch-repo(master) xdissent$ vagrant up chef
     [chef] Provisioning enabled with HatchProvisioner...
     [chef] Importing base box 'lucid64-chef-0.10.2'...
