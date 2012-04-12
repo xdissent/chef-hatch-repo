@@ -6,4 +6,3 @@
 tmp/
 cookbooks/*
 !cookbooks/hatch/
-Cheffile.lock
