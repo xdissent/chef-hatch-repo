@@ -1,7 +1,14 @@
 bash -c '
+
+version=`lsb_release -r -s`
+eval major=${version/./ minor=}
+
 if [ ! -f /usr/bin/chef-client ]; then
   apt-get update
-  apt-get install -y ruby ruby1.8-dev build-essential wget libruby-extras libruby1.8-extras
+  apt-get install -y ruby ruby1.8-dev build-essential wget
+  if [ ${major} -lt 12 ]; then
+    apt-get install -y libruby-extras libruby1.8-extras
+  fi
   cd /tmp
   wget http://production.cf.rubygems.org/rubygems/rubygems-1.6.2.tgz
   tar zxf rubygems-1.6.2.tgz
