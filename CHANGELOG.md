@@ -1,4 +1,11 @@
-## 0.1.3 (March 12, 2011)
+## 0.2.0 (April 12, 2012)
+
+  - Librarian support (https://github.com/xdissent/chef-hatch-repo/pull/5)
+  - Bump Vagrant to 1.0.2 in .rvmrc
+  - Rename bootstrap template
+  - Add support for Ubuntu 12.04
+
+## 0.1.3 (March 12, 2012)
 
   - Support for Vagrant 1.0.0 (https://github.com/xdissent/chef-hatch-repo/pull/3)
   - Add knife-ec2 gem to .rvmrc

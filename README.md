@@ -35,9 +35,10 @@ Requirements
 ============
 
 * Virtualbox (>= 4.1.0)
-* Vagrant (>= 1.0.0)
-* Chef (>= 0.10.8)
-* Knife-EC2 (>= 0.5.10)
+* Vagrant (>= 1.0.0) *optionally installed by `.rvmrc`*
+* Chef (>= 0.10.8) *optionally installed by `.rvmrc`*
+* Knife-EC2 (>= 0.5.10) *optionally installed by `.rvmrc`*
+* Librarian (>= 0.0.14) *optionally installed by `.rvmrc`*
 
 
 Suggested
@@ -62,9 +63,15 @@ repository. To begin, clone the Hatch repository::
     Resolving deltas: 100% (208/208), done.
     Stewart:Code xdissent$ cd chef-hatch-repo/
 
+
+Cookbooks are managed by `Librarian`_ and must be installed before use::
+
+    Stewart:chef-hatch-repo(master) xdissent$ librarian-chef install
+
     
 Then hatch a Chef server in a virtual machine::
 
+    Stewart:chef-hatch-repo(master) xdissent$ librarian-chef install
     Stewart:chef-hatch-repo(master) xdissent$ vagrant up chef
     [chef] Provisioning enabled with HatchProvisioner...
     [chef] Importing base box 'lucid64-chef-0.10.2'...

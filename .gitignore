@@ -3,3 +3,6 @@
 .chef/knife.rb
 .chef/checksums
 .vagrant
+tmp/
+cookbooks/
+Cheffile.lock

@@ -1,4 +1,4 @@
-rvm use default@chef-hatch-repo-0.1.3 --create
+rvm use default@chef-hatch-repo-0.2.0 --create
 
 if ! command -v knife ; then
   gem install chef --no-rdoc --no-ri --version 0.10.8
@@ -6,5 +6,9 @@ if ! command -v knife ; then
 fi
 
 if ! command -v vagrant ; then
-  gem install vagrant --no-rdoc --no-ri --version 1.0.0
+  gem install vagrant --no-rdoc --no-ri --version 1.0.2
+fi
+
+if ! command -v librarian-chef ; then
+  gem install librarian --no-rdoc --no-ri --version 0.0.14
 fi
