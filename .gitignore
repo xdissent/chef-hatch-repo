@@ -4,5 +4,6 @@
 .chef/checksums
 .vagrant
 tmp/
-cookbooks/
+cookbooks/*
+!cookbooks/hatch/
 Cheffile.lock

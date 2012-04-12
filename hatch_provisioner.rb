@@ -44,6 +44,7 @@ class HatchProvisioner < Vagrant::Provisioners::ChefSolo
     if ((env[:vm].config.vm.networks[0] || [])[1] || [])[0].nil?
       raise HatchError, :require_chef_ip if config.chef_ip.nil?
     end
+    config.add_recipe("hatch")
     super
   end
 
@@ -95,7 +96,7 @@ class HatchProvisioner < Vagrant::Provisioners::ChefSolo
     n = config.node_name || env.config.vm.host_name
 
     env[:ui].info I18n.t("#{I18N_NAMESPACE}.running_hatch_finish")
-    env[:vm].channel.sudo("cd /vagrant && rake hatch:finish['#{n}','#{config.run_list.join(' ')}','#{config.environment}']")
+    env[:vm].channel.sudo("cd /vagrant && rake hatch:finish")
     env[:ui].info I18n.t("#{I18N_NAMESPACE}.restarting_chef_client")
     env[:vm].channel.sudo("/etc/init.d/chef-client restart")
 

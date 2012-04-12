@@ -325,7 +325,7 @@ module HatchKnifePlugins
     def bootstrap_for_node(server, ssh_address)
       bootstrap = Chef::Knife::Bootstrap.new
       bootstrap.name_args = [ ssh_address ]
-      bootstrap.config[:run_list] = config[:run_list]
+      bootstrap.config[:run_list] = config[:run_list] + ["recipe[hatch]"]
       bootstrap.config[:ssh_user] = config[:ssh_user]
       bootstrap.config[:identity_file] = config[:identity_file]
       bootstrap.config[:chef_node_name] = config[:chef_node_name] || server.id
