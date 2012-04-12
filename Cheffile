@@ -13,7 +13,6 @@ cookbook 'couchdb'
 cookbook 'daemontools'
 cookbook 'erlang'
 cookbook 'gecode'
-cookbook 'java'
 cookbook 'nginx'
 cookbook 'openssl'
 cookbook 'runit'
@@ -21,3 +20,6 @@ cookbook 'ucspi-tcp'
 cookbook 'xml'
 cookbook 'yum'
 cookbook 'zlib'
+
+cookbook "java",
+  :git => "https://github.com/cjAdvertising/chef-java.git"
