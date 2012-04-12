@@ -71,7 +71,6 @@ Cookbooks are managed by `Librarian`_ and must be installed before use::
     
 Then hatch a Chef server in a virtual machine::
 
-    Stewart:chef-hatch-repo(master) xdissent$ librarian-chef install
     Stewart:chef-hatch-repo(master) xdissent$ vagrant up chef
     [chef] Provisioning enabled with HatchProvisioner...
     [chef] Importing base box 'lucid64-chef-0.10.2'...
