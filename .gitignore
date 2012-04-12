@@ -5,3 +5,4 @@
 .vagrant
 tmp/
 cookbooks/
+Cheffile.lock
