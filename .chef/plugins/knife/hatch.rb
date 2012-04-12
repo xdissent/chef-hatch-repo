@@ -106,7 +106,7 @@ module HatchKnifePlugins
       :long => "--distro DISTRO",
       :description => "Bootstrap a distro using a template",
       :proc => Proc.new { |d| Chef::Config[:knife][:distro] = d },
-      :default => "ubuntu10.04-gems"
+      :default => "ubuntu-gems-hatch"
    
     option :template_file,
       :long => "--template-file TEMPLATE",
@@ -337,8 +337,6 @@ module HatchKnifePlugins
       bootstrap.config[:environment] = config[:environment]
       # may be needed for vpc_mode
       bootstrap.config[:no_host_key_verify] = config[:no_host_key_verify]
-      # Always use hatch distro
-      bootstrap.config[:distro] = 'ubuntu10.04-gems-hatch'
       
       # Package files to send
       puts "#{ui.color("Creating temporary directory", :cyan)}"
