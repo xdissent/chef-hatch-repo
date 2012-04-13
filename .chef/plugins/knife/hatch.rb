@@ -425,7 +425,7 @@ module HatchKnifePlugins
       
       puts "#{ui.color("Finishing hatching and restarting chef-client", :cyan)}"
       Net::SSH.start(ssh_address, config[:ssh_user], :keys => [config[:identity_file]]) do |ssh|
-        ssh.exec! "cd /tmp/chef-hatch && sudo rake hatch:finish['#{bootstrap.config[:chef_node_name]}','#{config[:run_list].join(' ')}','#{config[:environment]}']"
+        ssh.exec! "cd /tmp/chef-hatch && sudo rake hatch:finish"
         ssh.exec! "sudo /etc/init.d/chef-client restart"
       end
       
