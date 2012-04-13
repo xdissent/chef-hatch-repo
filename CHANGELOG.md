@@ -1,3 +1,9 @@
+## 0.2.1 (April 13, 2012)
+
+  - Commit Cheffile.lock
+  - Move everything into hatch folder (that doesn't use knife).
+  - Save node data after solo run and restore attributes on server
+
 ## 0.2.0 (April 12, 2012)
 
   - Librarian support (https://github.com/xdissent/chef-hatch-repo/pull/5)
