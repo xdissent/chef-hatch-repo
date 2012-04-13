@@ -1,3 +1,7 @@
+## 0.2.3 (April 13, 2012)
+
+  - Fix bug in knife plugin that broke data bags
+
 ## 0.2.2 (April 13, 2012)
 
   - Clean up Cheffile
