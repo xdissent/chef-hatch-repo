@@ -64,10 +64,15 @@ repository. To begin, clone the Hatch repository::
     Stewart:Code xdissent$ cd chef-hatch-repo/
 
 
-Cookbooks are managed by `Librarian`_ and must be installed before use::
+Cookbooks are managed by [Librarian](https://github.com/applicationsonline/librarian) 
+and must be installed before use::
 
     Stewart:chef-hatch-repo(master) xdissent$ librarian-chef install
 
+
+To update the cookbooks to the latest available versions, run 
+`librarian-chef update`. See the [Librarian](https://github.com/applicationsonline/librarian) 
+documentation for more info.
     
 Then hatch a Chef server in a virtual machine::
 
