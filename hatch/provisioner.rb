@@ -1,5 +1,7 @@
 I18n.load_path << File.expand_path("../locales/en.yml", __FILE__)
 
+HATCH_ROOT = File.expand_path("..", File.dirname(__FILE__))
+
 class HatchProvisioner < Vagrant::Provisioners::ChefSolo
 
   I18N_NAMESPACE = "vagrant.provisioners.hatch"
@@ -71,10 +73,8 @@ class HatchProvisioner < Vagrant::Provisioners::ChefSolo
     env[:ui].info I18n.t("#{I18N_NAMESPACE}.uploading_roles")
     `for role in roles/*.rb ; do knife role from file $role ; done`
 
-    hatch_root = File.expand_path("..", File.dirname(__FILE__))
-
     # Find and upload all data bags
-    dbag_glob = File.join(hatch_root, config.data_bags_path) + "/*/*.json"
+    dbag_glob = File.join(HATCH_ROOT, config.data_bags_path) + "/*/*.json"
     dbags = []
     Dir.glob(dbag_glob) do |f|
       bag = File.basename(File.dirname(f))
@@ -89,7 +89,7 @@ class HatchProvisioner < Vagrant::Provisioners::ChefSolo
     end
 
     # Create environments
-    env_glob = File.join(hatch_root, "/environments") + "/*.rb"
+    env_glob = File.join(HATCH_ROOT, "/environments") + "/*.rb"
     Dir.glob(env_glob) do |f|
       env[:ui].info I18n.t("#{I18N_NAMESPACE}.uploading_environment", :name => f)
       `knife environment from file #{File.basename(f)}`
@@ -105,20 +105,19 @@ class HatchProvisioner < Vagrant::Provisioners::ChefSolo
   end
   
   def setup_knife_config
-    cwd = File.expand_path(File.dirname(__FILE__))
     conf = <<-END_CONF
       log_level                #{config.log_level}
       log_location             STDOUT
       node_name                '#{config.client_name}'
-      client_key               '#{cwd}/#{config.client_key_path}'
+      client_key               '#{HATCH_ROOT}/#{config.client_key_path}'
       validation_client_name   '#{config.validation_client_name}'
-      validation_key           '#{cwd}/#{config.validation_key_path}'
+      validation_key           '#{HATCH_ROOT}/#{config.validation_key_path}'
       chef_server_url          'http://#{config.chef_ip || env[:vm].config.vm.networks[0][1][0]}:4000'
       cache_type               'BasicFile'
-      cache_options( :path => '#{cwd}/.chef/checksums' )
+      cache_options( :path => '#{HATCH_ROOT}/.chef/checksums' )
       cookbook_path [ '#{cwd}/cookbooks' ]
     END_CONF
-    config_file = File.new("#{cwd}/.chef/knife.rb", "w")
+    config_file = File.new("#{HATCH_ROOT}/.chef/knife.rb", "w")
     config_file.write(conf)
     config_file.close
     env[:ui].info I18n.t("#{I18N_NAMESPACE}.wrote_configuration", :conf => conf)
