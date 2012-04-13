@@ -55,23 +55,8 @@ PATH
     hatch (0.0.1)
 
 DEPENDENCIES
-  apache2 (>= 0)
-  apt (>= 0)
-  bluepill (>= 0)
-  build-essential (>= 0)
   chef-client (>= 0)
   chef-server (>= 0)
-  couchdb (>= 0)
-  daemontools (>= 0)
-  erlang (>= 0)
-  gecode (>= 0)
   hatch (>= 0)
   java (>= 0)
-  nginx (>= 0)
-  openssl (>= 0)
-  runit (>= 0)
-  ucspi-tcp (>= 0)
-  xml (>= 0)
-  yum (>= 0)
-  zlib (>= 0)
 
