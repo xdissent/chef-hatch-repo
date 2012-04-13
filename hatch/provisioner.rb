@@ -50,7 +50,7 @@ class HatchProvisioner < Vagrant::Provisioners::ChefSolo
 
   def provision!
     env[:ui].info I18n.t("#{I18N_NAMESPACE}.running_bootstrap")
-    env[:vm].channel.sudo("sh /vagrant/.chef/bootstrap/vagrant-hatch.sh")
+    env[:vm].channel.sudo("sh /vagrant/hatch/vagrant.sh")
   
     super
 
@@ -71,8 +71,10 @@ class HatchProvisioner < Vagrant::Provisioners::ChefSolo
     env[:ui].info I18n.t("#{I18N_NAMESPACE}.uploading_roles")
     `for role in roles/*.rb ; do knife role from file $role ; done`
 
+    hatch_root = File.expand_path("..", File.dirname(__FILE__))
+
     # Find and upload all data bags
-    dbag_glob = File.expand_path(File.join(File.dirname(__FILE__), config.data_bags_path)) + "/*/*.json"
+    dbag_glob = File.join(hatch_root, config.data_bags_path) + "/*/*.json"
     dbags = []
     Dir.glob(dbag_glob) do |f|
       bag = File.basename(File.dirname(f))
@@ -87,7 +89,7 @@ class HatchProvisioner < Vagrant::Provisioners::ChefSolo
     end
 
     # Create environments
-    env_glob = File.expand_path(File.join(File.dirname(__FILE__), "/environments")) + "/*.rb"
+    env_glob = File.join(hatch_root, "/environments") + "/*.rb"
     Dir.glob(env_glob) do |f|
       env[:ui].info I18n.t("#{I18N_NAMESPACE}.uploading_environment", :name => f)
       `knife environment from file #{File.basename(f)}`

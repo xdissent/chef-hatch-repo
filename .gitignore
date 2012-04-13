@@ -4,5 +4,4 @@
 .chef/checksums
 .vagrant
 tmp/
-cookbooks/*
-!cookbooks/hatch/
+cookbooks/

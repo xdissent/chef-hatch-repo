@@ -49,6 +49,11 @@ GIT
   specs:
     java (1.5.1)
 
+PATH
+  remote: hatch/cookbook
+  specs:
+    hatch (0.0.1)
+
 DEPENDENCIES
   apache2 (>= 0)
   apt (>= 0)
@@ -60,6 +65,7 @@ DEPENDENCIES
   daemontools (>= 0)
   erlang (>= 0)
   gecode (>= 0)
+  hatch (>= 0)
   java (>= 0)
   nginx (>= 0)
   openssl (>= 0)
