@@ -1,28 +1,14 @@
 #!/usr/bin/env ruby
 #^syntax detection
 
-site 'http://community.opscode.com/api/v1'
+site "http://community.opscode.com/api/v1"
 
+# Base cookbooks required by Hatch
+cookbook "chef-client"
+cookbook "chef-server"
 cookbook "hatch",
   :path => "hatch/cookbook"
 
-cookbook 'apache2'
-cookbook 'apt'
-cookbook 'bluepill'
-cookbook 'build-essential'
-cookbook 'chef-client'
-cookbook 'chef-server'
-cookbook 'couchdb'
-cookbook 'daemontools'
-cookbook 'erlang'
-cookbook 'gecode'
-cookbook 'nginx'
-cookbook 'openssl'
-cookbook 'runit'
-cookbook 'ucspi-tcp'
-cookbook 'xml'
-cookbook 'yum'
-cookbook 'zlib'
-
+# Patched Opscode cookbook for Ubuntu 12.04
 cookbook "java",
   :git => "https://github.com/cjAdvertising/chef-java.git"

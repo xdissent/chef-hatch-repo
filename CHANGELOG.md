@@ -1,3 +1,8 @@
+## 0.2.2 (April 13, 2012)
+
+  - Clean up Cheffile
+  - Remove patchlevel version from .rvmrc
+
 ## 0.2.1 (April 13, 2012)
 
   - Commit Cheffile.lock
