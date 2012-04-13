@@ -52,7 +52,7 @@ Getting Started
 
 The Hatch repository has been forked from the official Opscode chef-repo
 repository. That means it's a convenient starting point for your own Chef
-repository. To begin, clone the Hatch repository::
+repository. To begin, clone the Hatch repository:
 
     Stewart:Code xdissent$ git clone https://github.com/xdissent/chef-hatch-repo.git
     Cloning into chef-hatch-repo...
@@ -65,7 +65,7 @@ repository. To begin, clone the Hatch repository::
 
 
 Cookbooks are managed by [Librarian](https://github.com/applicationsonline/librarian) 
-and must be installed before use::
+and must be installed before use:
 
     Stewart:chef-hatch-repo(master) xdissent$ librarian-chef install
 
@@ -74,7 +74,7 @@ To update the cookbooks to the latest available versions, run
 `librarian-chef update`. See the [Librarian](https://github.com/applicationsonline/librarian) 
 documentation for more info.
     
-Then hatch a Chef server in a virtual machine::
+Then hatch a Chef server in a virtual machine:
 
     Stewart:chef-hatch-repo(master) xdissent$ vagrant up chef
     [chef] Provisioning enabled with HatchProvisioner...
@@ -116,7 +116,7 @@ Then hatch a Chef server in a virtual machine::
     [chef] Grabbing validation key
 
 
-The Chef server can be managed using the `knife` command::
+The Chef server can be managed using the `knife` command:
 
     Stewart:chef-hatch-repo(master) xdissent$ knife status
     5 minutes ago, chef.local, chef.local, 10.0.2.15, ubuntu 10.04.
