@@ -75,10 +75,15 @@ namespace :hatch do
     c.cdb_save
     puts "Created #{args.client_name} admin client."
   end
-  task :finish, :node_name, :run_list, :environ do |t, args|
-    n = Chef::Node.cdb_load(args.node_name)
-    n.chef_environment(args.environ)
-    n.run_list.reset!(args.run_list.split)
+  task :finish do |t, args|
+    genes = JSON.parse(File.open("/tmp/chef-hatch-genes.json", 'r') { |f| f.read })
+    run_list = genes.run_list.dup
+    run_list.delete "recipe[hatch]"
+    n = Chef::Node.cdb_load(genes.name)
+    n.chef_environment(genes.chef_environment)
+    n.run_list.reset!(run_list)
+    n.normal_attrs = genes.normal_attrs
     n.cdb_save
+    File.delete("/tmp/chef-hatch-genes.json")
   end
 end

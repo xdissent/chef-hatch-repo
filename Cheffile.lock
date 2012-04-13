@@ -1,0 +1,77 @@
+SITE
+  remote: http://community.opscode.com/api/v1
+  specs:
+    apache2 (1.1.6)
+    apt (1.4.0)
+    bluepill (1.0.4)
+    build-essential (1.0.0)
+    chef-client (1.1.2)
+    chef-server (0.99.12)
+      apache2 (>= 0.0.0)
+      bluepill (>= 0.0.0)
+      couchdb (>= 0.0.0)
+      daemontools (>= 0.0.0)
+      gecode (>= 0.0.0)
+      java (>= 0.0.0)
+      nginx (>= 0.0.0)
+      openssl (>= 0.0.0)
+      runit (>= 0.0.0)
+      xml (>= 0.0.0)
+      zlib (>= 0.0.0)
+    couchdb (1.0.0)
+      erlang (>= 0.0.0)
+    daemontools (0.9.0)
+      build-essential (>= 0)
+      ucspi-tcp (>= 0)
+    erlang (1.0.0)
+      yum (>= 0.5.0)
+    gecode (1.2.0)
+      apt (>= 0.0.0)
+      build-essential (>= 0.0.0)
+    nginx (0.101.0)
+      bluepill (>= 0.0.0)
+      build-essential (>= 0.0.0)
+      ohai (~> 1.0.2)
+      runit (>= 0.0.0)
+    ohai (1.0.2)
+    openssl (1.0.0)
+    runit (0.15.0)
+    ucspi-tcp (1.0.0)
+      build-essential (>= 0)
+    xml (1.0.2)
+    yum (0.5.2)
+    zlib (1.0.0)
+
+GIT
+  remote: https://github.com/cjAdvertising/chef-java.git
+  ref: master
+  sha: 957356a6f38fdf9b3a2a23b031a81930fc60bbeb
+  specs:
+    java (1.5.1)
+
+PATH
+  remote: hatch/cookbook
+  specs:
+    hatch (0.0.1)
+
+DEPENDENCIES
+  apache2 (>= 0)
+  apt (>= 0)
+  bluepill (>= 0)
+  build-essential (>= 0)
+  chef-client (>= 0)
+  chef-server (>= 0)
+  couchdb (>= 0)
+  daemontools (>= 0)
+  erlang (>= 0)
+  gecode (>= 0)
+  hatch (>= 0)
+  java (>= 0)
+  nginx (>= 0)
+  openssl (>= 0)
+  runit (>= 0)
+  ucspi-tcp (>= 0)
+  xml (>= 0)
+  yum (>= 0)
+  zlib (>= 0)
+
