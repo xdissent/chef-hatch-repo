@@ -352,7 +352,7 @@ module HatchKnifePlugins
         cookbook_path ["/tmp/chef-hatch/cookbooks"]
         role_path "/tmp/chef-hatch/roles"
         log_level :info
-        data_bag_path ["/tmp/chef-hatch/data_bags"]
+        data_bag_path "/tmp/chef-hatch/data_bags"
       END_CONFIG
       config_file = File.new("#{temp_dir}/solo.rb", "w")
       config_file.write(solo_config)
