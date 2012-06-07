@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+
+log()   { printf -- "-----> $*\n" ; return $? ; }
+warn()  { printf -- ">>> $*\n" ; return $? ; }
+fail()  { printf -- "\nERROR: $*\n" ; exit 1 ; }
+
+if ! command -v direnv >/dev/null ; then
+  if [ "$(uname)" == "Darwin" ] && command -v brew >/dev/null ; then
+    log "Direnv package missing, installing from homebrew"
+    brew install direnv
+    eval $(direnv hook $SHELL)
+  else
+    warn "The direnv command is not installed and helps in configuring"
+    warn "this Chef repository."
+    warn ""
+    warn "Please visit https://github.com/zimbatm/direnv for more details."
+  fi
+fi
+
+if ! command -v bundle >/dev/null ; then
+  log "Installing bundler gem"
+  gem install bundler
+fi
+
+if ! bundle check >/dev/null ; then
+  log "Running bundle"
+  bundle install --binstubs --path vendor/bundle
+fi
+
+if [ ! -f "$HOME/.chef.d" ] ; then
+  log "Creating $HOME/.chef.d directory"
+  mkdir -p "$HOME/.chef.d"
+fi
+
+if [ ! -f "$(dirname $0)/../.envrc" ] ; then
+  log "Creating .envrc"
+  printf "Enter your organization or group name, something like 'widgetco' or 'personal'.\n"
+  printf "name> "
+  read NAME
+
+  if [ ! -f "$HOME/.chef.d/$NAME-env.sh" ] ; then
+    log "Creating $HOME/.chef.d/$NAME-env.sh (please edit afterwards)"
+    cat <<_END_OF_ENV > "$HOME/.chef.d/$NAME-env.sh"
+export AWS_AWS_ACCESS_KEY_ID=""
+export AWS_AWS_SECRET_ACCESS_KEY=""
+export AWS_AWS_SSH_KEY_ID=""
+export AWS_REGION=""
+export AWS_AVAILABILITY_ZONE=""
+export AWS_FLAVOR=""
+export AWS_IMAGE=""
+
+export RACKSPACE_USERNAME=""
+export RACKSPACE_API_KEY=""
+_END_OF_ENV
+  fi
+
+  if [ ! -f "$HOME/.chef.d/$NAME-env-user.sh" ] ; then
+    log "Creating $HOME/.chef.d/$NAME-env-user.sh (please edit afterwards)"
+    cat <<_END_OF_ENV > "$HOME/.chef.d/$NAME-env-user.sh"
+export KNIFE_USER="$USER"
+_END_OF_ENV
+  fi
+
+  cat <<_END_OF_ENVRC > "$(dirname $0)/../.envrc"
+PATH_add scripts
+PATH_add bin
+
+# load knife config vars
+knife_config=""
+for config in \$HOME/.chef.d/$NAME-env.sh \$HOME/.chef.d/$NAME-env-*.sh ; do
+  if [ -f "\$config" ] ; then
+    echo "direnv: loading \$config"
+    eval \$(cat \$config)
+  fi
+done ; unset config
+_END_OF_ENVRC
+
+  log "Loading .envrc"
+  touch "$(dirname $0)/../.envrc"
+fi
+
+log "Running librarian-chef"
+librarian-chef install
