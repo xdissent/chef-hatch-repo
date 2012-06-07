@@ -27,7 +27,7 @@ if ! bundle check >/dev/null ; then
   bundle install --binstubs --path vendor/bundle
 fi
 
-if [ ! -f "$HOME/.chef.d" ] ; then
+if [ ! -d "$HOME/.chef.d" ] ; then
   log "Creating $HOME/.chef.d directory"
   mkdir -p "$HOME/.chef.d"
 fi
@@ -80,4 +80,4 @@ _END_OF_ENVRC
 fi
 
 log "Running librarian-chef"
-librarian-chef install
+"$(dirname $0)/../bin/librarian-chef" install
