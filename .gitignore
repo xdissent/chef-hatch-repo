@@ -1,4 +1,6 @@
-Gemfile.lock
+# ignore bundler state and gems
+.bundle/
+vendor/bundle/
 
 # by default, exclude all cookbooks
 /cookbooks/*/
