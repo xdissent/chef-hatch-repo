@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+#^syntax detection
+set -e
+
+### Functions
+
+usage() {
+  printf "
+
+Usage
+
+  $(basename $0) [options]
+
+Options
+
+  --dry-run, -n   - Outputs commands to be run, but not execute them
+  --verbose, -v   - Outputs more information
+  --help          - Display CLI help (this output)
+
+"
+}
+
+### Parsing CLI Arguments
+
+while [[ $# -gt 0 ]] ; do
+  token="$1"
+  shift
+
+  case "$token" in
+    --dry-run|-n)
+      DRY_RUN=1
+      ;;
+    --verbose|-v)
+      VERBOSE=1
+      ;;
+    --help|--usage)
+      usage
+      exit 0
+      ;;
+    *)
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+### Perform the Work
+
+yaml="$TMPDIR/spiceweasel-$$.yml"
+
+# upload all cookbooks
+knife cookbook upload --all
+
+# create an intermediate version of the yaml evaluated through erubis
+erubis infrastructure.yml.erb > "$yaml"
+
+# run each resulting knife command output by spiceweasel,
+# unless in dry run mode
+spiceweasel --novalidation "$yaml" | while read knife_command ; do
+  if [[ -n "$DRY_RUN" ]] ; then
+    printf "$knife_command\n"
+  else
+    [[ -n "$VERBOSE" ]] && printf -- "----> Running: '${knife_command}' ...\n"
+    eval "$knife_command"
+  fi
+done ; unset knife_command
+
+# cleanup
+rm -f "$yaml"

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+#^syntax detection
+set -e
+
+if [[ -n "$1" ]] ; then
+  export CHEF_SERVER_NAME="$1"
+  printf -- "-----> Creating Chef Server with hostname of ${CHEF_SERVER_NAME}\n"
+  logfile="log/chef-server-$CHEF_SERVER_NAME-$(date +%F).log"
+else
+  logfile="log/chef-server-$(date +%F).log"
+fi
+mkdir -p "$(dirname $logfile)"
+
+set -x
+knife ec2 server create -d chef-server --ssh-user ubuntu | tee -a $logfile
+
+printf "\n-----> All done, w00t.\n\n\n"

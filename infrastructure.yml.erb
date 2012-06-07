@@ -1,0 +1,12 @@
+roles:
+<% Dir.glob("roles/*.rb").map { |dir| File.basename(dir).sub(/\.rb$/, '') }.each do |name| -%>
+  - <%= name %>:
+<% end -%>
+
+data bags:
+<% Dir.glob("data_bags/*").map { |dir| File.basename(dir) }.reject { |dir| dir =~ /^README/ }.each do |name| -%>
+  - <%= name %>:
+<% Dir.glob("data_bags/#{name}/*.json").map { |dir| File.basename(dir).sub(/\.json$/, '') }.each do |item| -%>
+    - <%= item %>
+<% end -%>
+<% end -%>
