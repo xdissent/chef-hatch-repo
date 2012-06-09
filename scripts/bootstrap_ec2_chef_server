@@ -4,6 +4,7 @@ set -e
 
 if [[ -n "$1" ]] ; then
   export CHEF_SERVER_NAME="$1"
+  shift
   printf -- "-----> Creating Chef Server with hostname of ${CHEF_SERVER_NAME}\n"
   logfile="log/chef-server-$CHEF_SERVER_NAME-$(date +%F).log"
 else
@@ -12,6 +13,7 @@ fi
 mkdir -p "$(dirname $logfile)"
 
 set -x
-knife ec2 server create -d chef-server --ssh-user ubuntu | tee -a $logfile
+knife ec2 server create -d chef-server-debian \
+  --node-name $CHEF_SERVER_NAME --ssh-user ubuntu | tee -a $logfile
 
 printf "\n-----> All done, w00t.\n\n\n"
