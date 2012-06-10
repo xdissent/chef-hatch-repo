@@ -49,7 +49,16 @@ done
 yaml="$TMPDIR/spiceweasel-$$.yml"
 
 # upload all cookbooks
-knife cookbook upload --all
+knife_upload_all_cookbooks="knife cookbook upload --all"
+if [[ -n "$DRY_RUN" ]] ; then
+  printf -- "$knife_upload_all_cookbooks\n"
+else
+  if [[ -n "$VERBOSE" ]] ; then
+    printf -- "----> Running: '${knife_upload_all_cookbooks}' ...\n"
+  fi
+  eval "$knife_upload_all_cookbooks"
+fi
+
 
 # create an intermediate version of the yaml evaluated through erubis
 erubis infrastructure.yml.erb > "$yaml"
