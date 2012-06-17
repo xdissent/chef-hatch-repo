@@ -62,7 +62,7 @@ _END_OF_ENV
   fi
 
   cat <<_END_OF_ENVRC > "$(dirname $0)/../.envrc"
-PATH_add scripts
+PATH_add script
 PATH_add bin
 
 # load knife config vars
