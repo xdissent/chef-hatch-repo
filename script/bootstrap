@@ -25,6 +25,8 @@ fi
 if ! bundle check >/dev/null ; then
   log "Running bundle"
   bundle install --binstubs --path vendor/bundle
+else
+  log "Bundler up to date, skipping bundle install"
 fi
 
 if [ ! -d "$HOME/.chef.d" ] ; then
