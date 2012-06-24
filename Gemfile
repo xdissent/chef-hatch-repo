@@ -7,6 +7,8 @@ gem 'librarian'
 # for mapping out your infrastructure
 gem 'spiceweasel'
 
+# create and manage chef servers
+gem 'knife-server'
 # amazon ec2 knife plugin
 gem 'knife-ec2'
 # diffs the cookbook versions of two or more environments
