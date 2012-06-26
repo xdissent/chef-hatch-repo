@@ -5,3 +5,9 @@ vendor/bundle/
 # by default, exclude all cookbooks
 /cookbooks/*/
 /tmp/
+
+# ignore vagrant state
+.vagrant
+
+# ignore exported vagrant boxes
+*.box
