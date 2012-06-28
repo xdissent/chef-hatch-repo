@@ -4,6 +4,8 @@ set -e
 
 ### Functions
 
+log()   { printf -- "-----> $*\n" ; return $? ; }
+
 usage() {
   printf "
 
@@ -54,7 +56,7 @@ if [[ -n "$DRY_RUN" ]] ; then
   printf -- "$knife_upload_all_cookbooks\n"
 else
   if [[ -n "$VERBOSE" ]] ; then
-    printf -- "----> Running: '${knife_upload_all_cookbooks}' ...\n"
+    log "Running: '${knife_upload_all_cookbooks}' ..."
   fi
   eval "$knife_upload_all_cookbooks"
 fi
@@ -69,7 +71,7 @@ spiceweasel --novalidation "$yaml" | while read knife_command ; do
   if [[ -n "$DRY_RUN" ]] ; then
     printf "$knife_command\n"
   else
-    [[ -n "$VERBOSE" ]] && printf -- "----> Running: '${knife_command}' ...\n"
+    [[ -n "$VERBOSE" ]] && log "Running: '${knife_command}' ..."
     eval "$knife_command"
   fi
 done ; unset knife_command
