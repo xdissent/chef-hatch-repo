@@ -48,26 +48,9 @@ done
 
 ### Perform the Work
 
-yaml="$TMPDIR/spiceweasel-$$.yml"
-
-# upload all cookbooks
-knife_upload_all_cookbooks="knife cookbook upload --all"
-if [[ -n "$DRY_RUN" ]] ; then
-  printf -- "$knife_upload_all_cookbooks\n"
-else
-  if [[ -n "$VERBOSE" ]] ; then
-    log "Running: '${knife_upload_all_cookbooks}' ..."
-  fi
-  eval "$knife_upload_all_cookbooks"
-fi
-
-
-# create an intermediate version of the yaml evaluated through erubis
-erubis infrastructure.yml.erb > "$yaml"
-
 # run each resulting knife command output by spiceweasel,
 # unless in dry run mode
-spiceweasel --novalidation "$yaml" | while read knife_command ; do
+spiceweasel --extractlocal "$yaml" | while read knife_command ; do
   if [[ -n "$DRY_RUN" ]] ; then
     printf "$knife_command\n"
   else
@@ -75,6 +58,3 @@ spiceweasel --novalidation "$yaml" | while read knife_command ; do
     eval "$knife_command"
   fi
 done ; unset knife_command
-
-# cleanup
-rm -f "$yaml"
