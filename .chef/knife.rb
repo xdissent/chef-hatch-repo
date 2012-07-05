@@ -21,7 +21,8 @@
 
 current_dir = File.dirname(__FILE__)
 home_dir    = ENV['HOME']
-chef_dir    = "#{home_dir}/.chef.d"
+chef_dir    = "#{home_dir}/.chef"
+chefd_dir   = "#{home_dir}/.chef.d"
 
 user        = ENV['KNIFE_USER'] || ENV['USER']
 orgname     = ENV['KNIFE_ORGNAME']
@@ -43,14 +44,14 @@ if orgname
   # if KNIFE_ORGNAME is given, then we're talking to the Opscode Hosted Chef
   # Server
   validation_client_name  "#{orgname}-validator"
-  client_key              "#{chef_dir}/opscode-#{user}.pem"
-  validation_key          "#{chef_dir}/opscode-#{orgname}-validator.pem"
+  client_key              "#{chefd_dir}/opscode-#{user}.pem"
+  validation_key          "#{chefd_dir}/opscode-#{orgname}-validator.pem"
   chef_server_url         "https://api.opscode.com/organizations/#{orgname}"
 elsif server_name
   # if KNIFE_SERVER_NAME is defined, then we're talking to a Chef Server
   validation_client_name  "chef-validator"
-  client_key              "#{chef_dir}/#{server_name}-#{user}.pem"
-  validation_key          "#{chef_dir}/#{server_name}-validator.pem"
+  client_key              "#{chefd_dir}/#{server_name}-#{user}.pem"
+  validation_key          "#{chefd_dir}/#{server_name}-validator.pem"
   chef_server_url         server_url
 end
 
@@ -60,6 +61,8 @@ environment               "stable"
 # caching options
 cache_type                'BasicFile'
 cache_options( :path =>   "#{home_dir}/.chef/checksums" )
+
+file_backup_path          "#{chef_dir}/backups"
 
 # new cookbook defaults
 cookbook_copyright        ENV['KNIFE_COOKBOOK_COPYRIGHT'] ||
