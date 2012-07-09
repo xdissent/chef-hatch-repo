@@ -83,12 +83,12 @@ if ENV['AWS_AWS_ACCESS_KEY_ID'] && ENV['AWS_AWS_SECRET_ACCESS_KEY']
   # Searches the ENV hash for keys starting with "AWS_" and converts them
   # to knife config settings. For example:
   #
-  #     ENV['AWS_ACCESS_KEY_ID'] = "abcabc"
+  #     ENV['AWS_AWS_ACCESS_KEY_ID'] = "abcabc"
   #     ENV['AWS_FLAVOR'] = "t1.small"
   #
   # becomes:
   #
-  #     knife[:access_key_id] = "abcabc"
+  #     knife[:aws_access_key_id] = "abcabc"
   #     knife[:flavor] = "t1.small"
   aws_attrs = ENV.keys.select { |k| k =~ /^AWS_/ }
 
