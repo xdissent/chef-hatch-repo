@@ -1,5 +1,14 @@
 # Chef Bootstrap Repo
 
+## Features
+
+* Convenient bootstrap script for optimal first-run experience and incremental
+  project updates
+* Flexible knife.rb configuration that supports solo, hosted and open source
+  Chef via environment variable injection
+* [direnv](https://github.com/zimbatm/direnv) support which loads and unloads
+  `bin/` and `script/` from your `PATH`
+
 ## Development
 
 ### Development Setup
