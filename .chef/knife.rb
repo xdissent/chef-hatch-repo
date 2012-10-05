@@ -101,3 +101,9 @@ end
 if ENV['LINODE_API_KEY']
   knife[:linode_api_key] = ENV['LINODE_API_KEY']
 end
+
+# bluebox configuration
+if ENV['BLUEBOX_CUSTOMER_ID'] && ENV['BLUEBOX_API_KEY']
+  knife[:bluebox_customer_id] = ENV['BLUEBOX_CUSTOMER_ID']
+  knife[:bluebox_api_key]     = ENV['BLUEBOX_API_KEY']
+end
