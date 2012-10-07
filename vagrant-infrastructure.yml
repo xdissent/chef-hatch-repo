@@ -1,0 +1,33 @@
+---
+cookbooks:
+- apache2: 
+- apt: 
+- bluepill: 
+- build-essential: 
+- chef-client: 
+- gecode: 
+- java: 
+- ohai: 
+- openssl: 
+- runit: 
+- ucspi-tcp: 
+- xml: 
+- yum: 
+- zlib: 
+- daemontools: 
+- erlang: 
+- nginx: 
+- couchdb: 
+- chef-server: 
+roles:
+- chef_client:
+- chef_server:
+environments:
+data bags:
+nodes:
+- server_standalone chef.local:
+  - role[chef_server]
+  - -N chef.local -H 192.168.33.11 -x vagrant -i ~/.vagrant.d/insecure_private_key
+- 192.168.33.12:
+  - role[chef_client]
+  - -N demo.local -x vagrant -i ~/.vagrant.d/insecure_private_key --sudo
