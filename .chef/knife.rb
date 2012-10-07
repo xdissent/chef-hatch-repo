@@ -52,7 +52,7 @@ elsif server_name
   validation_client_name  "chef-validator"
   client_key              "#{chefd_dir}/#{server_name}-#{user}.pem"
   validation_key          "#{chefd_dir}/#{server_name}-validator.pem"
-  chef_server_url         server_url
+  chef_server_url         server_url.dup
 end
 
 # set default chef environment when bootstrapping
