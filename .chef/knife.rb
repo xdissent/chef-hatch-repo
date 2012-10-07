@@ -56,7 +56,7 @@ elsif server_name
 end
 
 # set default chef environment when bootstrapping
-environment               "stable"
+# environment               "stable"
 
 # caching options
 cache_type                'BasicFile'
