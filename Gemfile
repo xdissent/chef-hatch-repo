@@ -22,5 +22,8 @@ gem 'pry'
 # Vagrant for local testing
 gem 'vagrant', '~> 1.0.5'
 
+# Vagrant Hostmaster for VM /etc/hosts management
+gem 'vagrant-hostmaster'
+
 # List Ubuntu EC2 AMIs from knife
 gem 'ubuntu_ami'

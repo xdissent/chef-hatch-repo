@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/cjAdvertising/knife-server.git
-  revision: 4f428b3ff2bc7f059afcf76be26332c16e9ef01f
+  revision: 3a0690dab67dccb44e9c0b9db3c0eefbafa41996
   ref: ssh-identity
   specs:
     knife-server (0.3.1.dev)
@@ -44,7 +44,7 @@ GEM
       yajl-ruby (~> 1.1)
     childprocess (0.3.5)
       ffi (~> 1.0, >= 1.0.6)
-    coderay (1.0.7)
+    coderay (1.0.8)
     erubis (2.7.0)
     excon (0.16.4)
     ffi (1.1.5)
@@ -125,6 +125,8 @@ GEM
       log4r (~> 1.1.9)
       net-scp (~> 1.0.4)
       net-ssh (~> 2.2.2)
+    vagrant-hostmaster (0.8.1)
+      vagrant (~> 1.0.3)
     yajl-ruby (1.1.0)
 
 PLATFORMS
@@ -141,3 +143,4 @@ DEPENDENCIES
   spiceweasel!
   ubuntu_ami
   vagrant (~> 1.0.5)
+  vagrant-hostmaster
